@@ -1,0 +1,59 @@
+<div class="login-page">
+  <mat-card class="login-card">
+    <mat-card-header>
+      <mat-card-title class="login-title">Welcome to Patlix</mat-card-title>
+      <mat-card-subtitle>Sign in to launch your workspace projects</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-card-content>
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Email</mat-label>
+          <input matInput formControlName="email" type="email" autocomplete="email" />
+          <mat-icon matPrefix>mail_outline</mat-icon>
+          @if (form.controls.email.hasError('required')) {
+            <mat-error>Email is required</mat-error>
+          } @else if (form.controls.email.hasError('email')) {
+            <mat-error>Enter a valid email</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full-width">
+          <mat-label>Password</mat-label>
+          <input
+            matInput
+            formControlName="password"
+            type="password"
+            autocomplete="current-password"
+          />
+          <mat-icon matPrefix>lock_outline</mat-icon>
+          @if (form.controls.password.hasError('required')) {
+            <mat-error>Password is required</mat-error>
+          }
+        </mat-form-field>
+
+        @if (error(); as message) {
+          <mat-error class="login-error">{{ message }}</mat-error>
+        }
+
+        <button
+          mat-flat-button
+          color="primary"
+          type="submit"
+          class="full-width"
+          [disabled]="form.invalid || loading()"
+        >
+          @if (loading()) {
+            <mat-progress-spinner diameter="20" mode="indeterminate" />
+            <span class="btn-label">Signing in…</span>
+          } @else {
+            <ng-container>
+              <mat-icon>login</mat-icon>
+              <span class="btn-label">Sign in</span>
+            </ng-container>
+          }
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+</div>
