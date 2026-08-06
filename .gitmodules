@@ -1,0 +1,9 @@
+[submodule "apps/web"]
+	path = apps/web
+	url = git@github.com:PatlixStudio/patlix-web.git
+[submodule "apps/api"]
+	path = apps/api
+	url = git@github.com:PatlixStudio/patlix-api.git
+[submodule "libs/shared"]
+	path = libs/shared
+	url = git@github.com:PatlixStudio/patlix-shared.git
