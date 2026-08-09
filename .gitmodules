@@ -7,3 +7,18 @@
 [submodule "libs/shared"]
 	path = libs/shared
 	url = git@github.com:PatlixStudio/patlix-shared.git
+[submodule "apps/arkadion-api"]
+	path = apps/arkadion-api
+	url = git@github.com:PatlixStudio/arkadion-api.git
+[submodule "apps/arkadion-web"]
+	path = apps/arkadion-web
+	url = git@github.com:PatlixStudio/arkadion-web.git
+[submodule "apps/falina-api"]
+	path = apps/falina-api
+	url = git@github.com:PatlixStudio/falina-api.git
+[submodule "apps/falina-web"]
+	path = apps/falina-web
+	url = git@github.com:PatlixStudio/falina-web.git
+[submodule "libs/falina-shared"]
+	path = libs/falina-shared
+	url = git@github.com:PatlixStudio/falina-shared.git

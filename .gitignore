@@ -57,3 +57,6 @@ vitest.config.*.timestamp*
 .angular
 
 __screenshots__/
+
+# graphify knowledge graph (regenerable)
+graphify-out/

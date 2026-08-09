@@ -1,0 +1,52 @@
+name: patlix
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: patlix-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-arkadion}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-arkadion}
+      POSTGRES_DB: ${DB_NAME:-patlix}
+    ports:
+      - "5432:5432"
+    volumes:
+      - patlix_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-arkadion} -d ${DB_NAME:-patlix}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: patlix-redis
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "no"]
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  speaches:
+    image: ghcr.io/speaches-ai/speaches:latest-cpu
+    container_name: patlix-speaches
+    restart: unless-stopped
+    environment:
+      WHISPER__INFERENCE_DEVICE: cpu
+      ENABLE_UI: "false"
+    ports:
+      - "8969:8000"
+    volumes:
+      - speaches_models:/root/.cache/huggingface
+
+volumes:
+  patlix_pgdata:
+    external: true
+  speaches_models:
+    external: true
+  redis_data:

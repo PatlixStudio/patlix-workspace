@@ -30,9 +30,9 @@ Stack and rules for this workspace:
 - **Backend** = NestJS + **TypeORM** + **PostgreSQL**. Use `@nx/nest:app` generators.
 - **Shared code** = `libs/shared` (`@patlix/shared`) for DTOs/types consumed by both apps. Keep it framework-agnostic (plain types/enums only).
 - **Always add Swagger** (`@nestjs/swagger` at `/api/docs`) and **code documentation** (TSDoc on every public member, README per app).
-- Every project in `apps/*` / `libs/*` is its **own git repo** (`PatlixStudio/patlix-<name>`) wired in as a git **submodule**. Work inside each project repo; the workspace repo tracks submodule commits.
+- Every project in `apps/*` / `libs/*` is its **own git repo** wired in as a git **submodule**. Work inside each project repo; the workspace repo tracks submodule commits. Repo naming: Patlix's own apps are `patlix-<name>` (`patlix-web`, `patlix-api`, `patlix-shared`); feature projects keep `<name>-web` / `<name>-api` (e.g. `arkadion-web`, `arkadion-api`).
 - npm is the package manager. Strict TypeScript, ESLint + Prettier, tests (Jest for api, Vitest for web/shared).
-- Module boundaries are enforced via `scope:*` tags in `eslint.config.mjs` (`scope:web`, `scope:api`, `scope:shared`).
+- Module boundaries are enforced via `scope:*` tags in `eslint.config.mjs` (`scope:web`, `scope:api`, `scope:shared`). `arkadion-*` projects run their own tooling via `nx:run-commands` and are not bound to the patlix scope tags.
 
 ## Resource-constrained machine (important)
 
@@ -46,14 +46,29 @@ This WSL2 box has ~3.8 GB RAM. Nx tasks can OOM / hit vitest worker timeouts whe
 
 - `npx nx serve api` → API on :3000, Swagger at `/api/docs`
 - `npx nx serve web` → dashboard on :4200 (proxies `/api` → :3000)
+- `npx nx serve arkadion-api` → :3001 (needs its own deps: `npm install --prefix apps/arkadion-api`)
+- `npx nx serve arkadion-web` → :4201 (needs its own deps: `npm install --prefix apps/arkadion-web`)
 - `npx nx lint|test|build <project>` for a single project
 - `npx nx run-many -t lint test build --parallel=1` for all quality gates
 - `npx nx g @nx/angular:app <name> --directory=apps/<name> --style=scss --routing --unitTestRunner=vitest-angular`
 - `npx nx g @nx/nest:app <name> --directory=apps/<name> --unitTestRunner=jest`
 - `npx nx g @nx/js:lib <name> --directory=libs/<name> --importPath=@patlix/<name>`
 
-## Database
+## Database & shared infra
 
-- Postgres runs in Docker Desktop on Windows at `localhost:5432` (container `arkadion-postgres`).
-- Dev credentials: user `patlix`, password `patlix`, database `patlix` (see `apps/api/.env`).
+- Postgres runs in Docker Desktop on Windows at `localhost:5432` — container `patlix-postgres` (superuser `arkadion`/`arkadion`, volume `patlix_pgdata`). Start/stop via `docker compose` at the workspace root (also manages `patlix-speaches` on :8969).
+- Each project uses its own DB inside the shared Postgres: `patlix` (role `patlix`, `apps/api/.env`) and `arkadion` (`apps/arkadion-api/.env`).
 - Schema auto-syncs (`synchronize: true`) — dev only.
+
+## graphify
+
+This project has a knowledge graph at graphify-out/ with god nodes, community structure, and cross-file relationships.
+
+When the user types `/graphify`, use the installed graphify skill or instructions before doing anything else.
+
+Rules:
+- For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
+- Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
+- If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
+- Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
+- After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
