@@ -41,8 +41,7 @@
 - [x] **M0 — Scaffold:** repos created + pushed + submodules wired; shared types (agent/task/project/company/property/world/event/user); NestJS + Angular skeletons; `PATLIX_WORLD_DECISIONS.md`.
 - [x] **M1 — Backend core:** auth/users, companies/properties/projects, agents/tasks, world zones, event bus + WS gateway, seed. (DB `patlixworld` must be created in Postgres.)
 - [x] **M2 — Models + Aurel:** port provider chain into `models`; orchestration request→plan→assign.
-- [ ] **M3 — Tools:** permissioned OpenCode executor → real task, streamed progress events.
-- [ ] **M3 — Tools:** permissioned OpenCode executor → real task, streamed progress events.
+- [x] **M3 — Tools:** permissioned OpenCode executor → real task, streamed progress events.
 - [ ] **M4 — Web shell:** WS service, WorldStateStore, WorldAdapter, inspector/map/chat UI, auth.
 - [ ] **M5 — 3D world:** renderer, terrain, water, trees, sky, lighting, HQ building.
 - [ ] **M6 — Character system:** shared rig + animation controller + GLB loader (placeholder Mixamo assets).
@@ -55,7 +54,8 @@
 - **Done:** M0 complete. **M1 complete** — backend core implemented, typechecked, linted, tested, and verified end-to-end: auth (register/login/JWT), users, companies, properties, projects, agents, tasks, workflows, events outbox→WS (`/world` socket, JWT handshake), world zones + `GET /api/world/snapshot`, idempotent seed (demo user `dev@patlix.studio`/`patlixworld`; zones beach/hq/forest/village/river/mountain; company "Patlix"; property "Patlix HQ" at hq zone; project `patlix-world-web`; agents Aurel/Developer-01/Designer-01; task "Implement JWT authentication"). API pushed (commit `4dca02d`); runs at :3003, Swagger `/api/docs`.
   - Notes: union-typed (`string | null`) columns need explicit `type:` in entities (TypeORM). `allowScripts` added to api `package.json` so shared-lib build runs on install. Avoid `pkill -f` patterns that match the shell's own command line.
 - **Done:** **M2 complete** — `models` module (provider chain NVIDIA→Google→Groq→OpenRouter→Ollama, provider-agnostic; `ModelsService.chat`) + `orchestration` module (Aurel: `POST /api/orchestration/requests` → plan → assign; `plans` table, `PlanDto`/`PlanStepDto` in shared; LLM plan with deterministic local-planner fallback; steps materialized as Tasks with `planId`, agents assigned by role). Verified end-to-end with local fallback (no provider keys/ollama yet); pushed.
-- **Next step:** M3 — `tools` module: permissioned OpenCode CLI executor → real task, streamed progress events (`agent.tool.*`).
+- **Done:** **M3 complete** — `tools` module: permissioned OpenCode executor (`POST /api/tools/execute`), runs `opencode run --format json [--auto]` in an allowed patlix-world repo (workdir whitelist), streams `agent.tool.started/message.sent/completed/failed` + task/agent updates over `/world`, persists `tool_runs` (transcript + tokens/cost). Verified end-to-end: executed the seeded task via real OpenCode, agent created a file in `apps/patlix-world-web`, task→REVIEW/100%, agent→IDLE. `WORLD_WORKSPACE_ROOT` + `OPENCODE_BIN`/`OPENCODE_AUTO` env knobs.
+- **Next step:** M4 — web shell (`patlix-world-web`): WS service, WorldStateStore (signals), WorldAdapter, auth, inspector/map/chat UI.
 - **Workflow rule:** work only in the patlix-world repos; commit/push each repo separately; never modify other submodules.
 - **Note:** parent nx has scope tags; `patlix-world-*` project.json files reference the parent `../../node_modules/nx/...` schema. Shared lib is built by api's `prestart` hook.
 
