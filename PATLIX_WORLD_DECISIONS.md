@@ -39,7 +39,7 @@
 ## Build order (milestones)
 
 - [x] **M0 — Scaffold:** repos created + pushed + submodules wired; shared types (agent/task/project/company/property/world/event/user); NestJS + Angular skeletons; `PATLIX_WORLD_DECISIONS.md`.
-- [ ] **M1 — Backend core:** auth/users, companies/properties/projects, agents/tasks, world zones, event bus + WS gateway, seed. (DB `patlixworld` must be created in Postgres.)
+- [x] **M1 — Backend core:** auth/users, companies/properties/projects, agents/tasks, world zones, event bus + WS gateway, seed. (DB `patlixworld` must be created in Postgres.)
 - [ ] **M2 — Models + Aurel:** port provider chain into `models`; orchestration request→plan→assign.
 - [ ] **M3 — Tools:** permissioned OpenCode executor → real task, streamed progress events.
 - [ ] **M4 — Web shell:** WS service, WorldStateStore, WorldAdapter, inspector/map/chat UI, auth.
@@ -51,8 +51,9 @@
 
 ## Current state
 
-- **Done:** M0 complete. Repos: `patlix-world-shared` (types defined), `patlix-world-api` (NestJS skeleton: main.ts with Swagger + health, ConfigModule, TypeOrmModule), `patlix-world-web` (Angular skeleton: app + routes + environments → :3003/:4203). All committed + pushed; parent workspace at `53b576c`.
-- **Next step:** M1 — start with DB setup (create `patlixworld` role/db) and the `events` module (event bus + persisted outbox) + `gateway` (`/world` socket), then agents/tasks/projects/companies/properties entities + seed.
+- **Done:** M0 complete. **M1 complete** — backend core implemented, typechecked, linted, tested, and verified end-to-end: auth (register/login/JWT), users, companies, properties, projects, agents, tasks, workflows, events outbox→WS (`/world` socket, JWT handshake), world zones + `GET /api/world/snapshot`, idempotent seed (demo user `dev@patlix.studio`/`patlixworld`; zones beach/hq/forest/village/river/mountain; company "Patlix"; property "Patlix HQ" at hq zone; project `patlix-world-web`; agents Aurel/Developer-01/Designer-01; task "Implement JWT authentication"). API pushed (commit `4dca02d`); runs at :3003, Swagger `/api/docs`.
+  - Notes: union-typed (`string | null`) columns need explicit `type:` in entities (TypeORM). `allowScripts` added to api `package.json` so shared-lib build runs on install. Avoid `pkill -f` patterns that match the shell's own command line.
+- **Next step:** M2 — `models` module (provider chain NVIDIA→Google→Groq→OpenRouter→Ollama, provider-agnostic) + `orchestration` (Aurel: request→plan→assign).
 - **Workflow rule:** work only in the patlix-world repos; commit/push each repo separately; never modify other submodules.
 - **Note:** parent nx has scope tags; `patlix-world-*` project.json files reference the parent `../../node_modules/nx/...` schema. Shared lib is built by api's `prestart` hook.
 
