@@ -22,3 +22,12 @@
 [submodule "libs/falina-shared"]
 	path = libs/falina-shared
 	url = git@github.com:PatlixStudio/falina-shared.git
+[submodule "libs/patlix-world-shared"]
+	path = libs/patlix-world-shared
+	url = git@github.com:PatlixStudio/patlix-world-shared.git
+[submodule "apps/patlix-world-api"]
+	path = apps/patlix-world-api
+	url = git@github.com:PatlixStudio/patlix-world-api.git
+[submodule "apps/patlix-world-web"]
+	path = apps/patlix-world-web
+	url = git@github.com:PatlixStudio/patlix-world-web.git
