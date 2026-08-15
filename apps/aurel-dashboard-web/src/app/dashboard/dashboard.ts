@@ -3,6 +3,7 @@ import { MatIcon } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
+import { WebSocketService, DashboardEvent } from '../websocket.service';
 
 interface StatCard {
   label: string;
@@ -105,18 +106,113 @@ export class DashboardComponent implements OnInit, OnDestroy {
   protected readonly waveform = signal<number[]>([]);
 
   private readonly http = inject(HttpClient);
+  private readonly wsService = inject(WebSocketService);
   private refreshInterval?: number;
   private waveformInterval?: number;
+  protected readonly wsConnected = signal(false);
+  protected readonly tasks = signal<any[]>([]);
+  protected readonly plans = signal<any[]>([]);
 
   ngOnInit(): void {
     this.loadDashboardData();
     this.startAutoRefresh();
     this.startWaveformAnimation();
+    this.connectWebSocket();
+    this.setupWebSocketListeners();
   }
 
   ngOnDestroy(): void {
     if (this.refreshInterval) clearInterval(this.refreshInterval);
     if (this.waveformInterval) clearInterval(this.waveformInterval);
+    this.wsService.disconnect();
+  }
+
+  private connectWebSocket(): void {
+    this.wsService.connect();
+    // Monitor connection status
+    setInterval(() => {
+      this.wsConnected.set(this.wsService.isConnected());
+    }, 2000);
+  }
+
+  private setupWebSocketListeners(): void {
+    this.wsService.events$.subscribe((event: DashboardEvent) => {
+      this.handleWebSocketEvent(event);
+    });
+  }
+
+  private handleWebSocketEvent(event: DashboardEvent): void {
+    switch (event.type) {
+      case 'plan.created':
+      case 'plan.updated':
+        this.refreshPlans();
+        break;
+      case 'task.created':
+      case 'task.started':
+      case 'task.completed':
+      case 'task.failed':
+      case 'task.updated':
+      case 'task.cancelled':
+        this.refreshTasks();
+        break;
+      case 'subagent.status.changed':
+        this.refreshSubagents();
+        break;
+      case 'subagent.task.assigned':
+      case 'subagent.task.progress':
+      case 'subagent.task.completed':
+        this.refreshSubagents();
+        this.refreshTasks();
+        break;
+      case 'metrics.collected':
+        this.updateMetrics(event.payload);
+        break;
+    }
+    this.addLog('info', `Live update: ${event.type}`);
+  }
+
+  private async refreshPlans(): Promise<void> {
+    try {
+      const plans = await this.http.get<any[]>('/api/orchestration/plans').toPromise();
+      if (plans) {
+        this.plans.set(plans);
+        this.updateStatsFromPlans(plans);
+      }
+    } catch (error) {
+      console.error('Failed to refresh plans:', error);
+    }
+  }
+
+  private async refreshTasks(): Promise<void> {
+    try {
+      const tasks = await this.http.get<any[]>('/api/tasks').toPromise();
+      if (tasks) this.tasks.set(tasks);
+    } catch (error) {
+      console.error('Failed to refresh tasks:', error);
+    }
+  }
+
+  private async refreshSubagents(): Promise<void> {
+    try {
+      const agents = await this.http.get<any[]>('/api/subagents').toPromise();
+      if (agents) this.subagents.set(agents);
+    } catch (error) {
+      console.error('Failed to refresh subagents:', error);
+    }
+  }
+
+  private updateMetrics(metrics: any): void {
+    // Update stats from metrics
+    if (metrics?.agents) {
+      this.stats.update(current => [
+        { ...current[0], value: String(metrics.agents.online + metrics.agents.working) },
+        { ...current[1], value: String(metrics.tasks.running) },
+        { ...current[2], value: metrics.plans ? 
+          `${Math.round((metrics.plans.completed / (metrics.plans.total || 1)) * 100)}%` : 
+          current[2].value },
+        { ...current[3], value: String(metrics.tasks.failed + metrics.plans?.failed || 0) },
+      ]);
+    }
   }
 
   private startAutoRefresh(): void {

@@ -93,8 +93,73 @@
             <span class="sa-name">{{ sa.name }}</span>
             <span class="sa-role">{{ sa.role }}</span>
           </div>
-          <span class="status-dot {{ sa.status }}"></span>
+          <span class="status-dot {{ getStatusClass(sa.status) }}"></span>
         </div>
+        }
+      </div>
+    </div>
+
+    <!-- WebSocket Status Indicator -->
+    <div class="panel panel-ws-status">
+      <div class="panel-header">
+        <h2>Live Connection</h2>
+        <span class="status-badge" [class.connected]="wsConnected()" [class.disconnected]="!wsConnected()">
+          <mat-icon>{{ wsConnected() ? 'wifi' : 'wifi_off' }}</mat-icon>
+          {{ wsConnected() ? 'Connected' : 'Disconnected' }}
+        </span>
+      </div>
+      <div class="ws-info">
+        <div class="ws-item">
+          <span class="ws-label">Realtime Updates</span>
+          <span class="ws-value">{{ wsConnected() ? 'Active' : 'Reconnecting...' }}</span>
+        </div>
+        <div class="ws-item">
+          <span class="ws-label">Auto-refresh</span>
+          <span class="ws-value">10s interval</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Task Queue Management -->
+    <div class="panel panel-tasks">
+      <div class="panel-header">
+        <h2>Task Queue</h2>
+        <span class="task-count">{{ tasks().length }} tasks</span>
+      </div>
+      <div class="task-list">
+        @for (task of tasks(); track task.id) {
+        <div class="task-item">
+          <div class="task-header">
+            <span class="task-title">{{ task.title }}</span>
+            <span class="task-status {{ task.status }}">{{ task.status }}</span>
+          </div>
+          <div class="task-meta">
+            <span class="task-type">{{ task.type }}</span>
+            @if (task.assignedAgentId) {
+            <span class="task-agent">→ {{ task.assignedAgentId }}</span>
+            }
+            @if (task.planId) {
+            <span class="task-plan">📋 {{ task.planId }}</span>
+            }
+          </div>
+          <div class="task-progress">
+            <div class="progress-track">
+              <div class="progress-fill" 
+                   [style.width.%]="task.status === 'completed' ? 100 : (task.status === 'running' ? 50 : 0)"
+                   [style.background]="task.status === 'completed' ? '#21d07a' : (task.status === 'running' ? '#ffd700' : '#8fa3b8')">
+              </div>
+            </div>
+          </div>
+          @if (task.output) {
+          <div class="task-output">{{ task.output }}</div>
+          }
+          @if (task.error) {
+          <div class="task-error">{{ task.error }}</div>
+          }
+        </div>
+        }
+        @if (tasks().length === 0) {
+        <div class="empty-state">No tasks in queue. Create one via chat or API.</div>
         }
       </div>
     </div>
