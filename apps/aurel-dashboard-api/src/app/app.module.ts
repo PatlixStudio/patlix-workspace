@@ -14,6 +14,7 @@ import { TasksController } from './tasks/tasks.controller';
 import { TasksService } from './tasks/tasks.service';
 import { MetricsController } from './metrics/metrics.controller';
 import { MetricsService } from './metrics/metrics.service';
+import { DashboardGateway } from './websocket/websocket.gateway';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { MetricsService } from './metrics/metrics.service';
     SubagentService,
     TasksService,
     MetricsService,
+    DashboardGateway,
   ],
 })
 export class AppModule {}
