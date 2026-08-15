@@ -1,0 +1,56 @@
+@use 'sass:map';
+
+// Brand cyan — anchor tone 40 = #01C3F5 (from design image).
+$_cyan: (
+  0: #000000,
+  10: #001d2a,
+  20: #00344a,
+  25: #004059,
+  30: #004c68,
+  35: #005978,
+  40: #01c3f5,
+  50: #26d2ff,
+  60: #56daff,
+  70: #8ae2ff,
+  80: #b6ecff,
+  90: #d9f5ff,
+  95: #edfaff,
+  98: #f8fdff,
+  99: #fbffff,
+  100: #ffffff,
+);
+
+// Brand gold — accent for highlights (tone 60 = #FFD700 from design image).
+$_gold: (
+  0: #000000,
+  10: #241a00,
+  20: #3d2f00,
+  25: #4a3a00,
+  30: #574500,
+  35: #655000,
+  40: #735d00,
+  50: #8f7600,
+  60: #ffd700,
+  70: #fce06b,
+  80: #ffe484,
+  90: #fff3c2,
+  95: #fff9df,
+  98: #fffdf0,
+  99: #fffbff,
+  100: #ffffff,
+);
+
+/// Builds a complete Material 3 tonal palette from a base map.
+@function build-palette($base) {
+  @return map.merge(
+    $base,
+    (
+      secondary: $base,
+      neutral: $base,
+      neutral-variant: $base,
+    )
+  );
+}
+
+$cyan-palette: build-palette($_cyan);
+$gold-palette: build-palette($_gold);

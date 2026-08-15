@@ -1,0 +1,235 @@
+<div class="dash">
+  <!-- MISSION OVERVIEW -->
+  <section class="grid-overview">
+    @for (stat of stats; track stat.label) {
+    <div class="stat-card">
+      <div class="stat-icon {{ stat.accent }}">
+        <mat-icon>{{ stat.icon }}</mat-icon>
+      </div>
+      <div class="stat-body">
+        <span class="stat-value">{{ stat.value }}</span>
+        <span class="stat-label">{{ stat.label }}</span>
+      </div>
+    </div>
+    }
+  </section>
+
+  <!-- MAIN GRID -->
+  <section class="grid-main">
+    <!-- Aurel profile card -->
+    <div class="panel panel-profile">
+      <div class="profile-head">
+        <div class="profile-avatar">A</div>
+        <div>
+          <div class="profile-name">Aurel</div>
+          <div class="profile-role">Command Strategist</div>
+        </div>
+        <span class="status-dot online"></span>
+      </div>
+      <div class="profile-badge">
+        <mat-icon>workspace_premium</mat-icon>
+        <div>
+          <span class="badge-value">98.7%</span>
+          <span class="badge-label">Overall Efficiency</span>
+        </div>
+      </div>
+      <div class="profile-progress">
+        <div class="progress-track">
+          <div class="progress-fill gold" style="width: 98.7%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mission overview -->
+    <div class="panel panel-mission">
+      <div class="panel-header">
+        <h2>Mission Overview</h2>
+        <mat-icon class="more">more_vert</mat-icon>
+      </div>
+      <div class="mission-stats">
+        @for (m of stats.slice(0, 2); track m.label) {
+        <div class="mission-stat">
+          <span class="mission-value">{{ m.value }}</span>
+          <span class="mission-label">{{ m.label }}</span>
+        </div>
+        }
+      </div>
+      <div class="progress-block">
+        <div class="progress-row">
+          <span>Overall Progress</span>
+          <span class="pct">85%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill gold" style="width: 85%"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aurel conversation -->
+    <div class="panel panel-chat">
+      <div class="panel-header">
+        <h2>Aurel Conversation</h2>
+        <span class="live-badge">LIVE</span>
+      </div>
+      <div class="waveform">
+        @for (h of waveform; track $index) {
+        <div class="wave-bar" [style.height.px]="h" [style.animation-delay.ms]="$index * 40"></div>
+        }
+      </div>
+      <div class="chat-caption">Monitoring command stream…</div>
+    </div>
+
+    <!-- Subagents -->
+    <div class="panel panel-subagents">
+      <div class="panel-header">
+        <h2>Subagents</h2>
+        <a class="panel-link" href="#">View all</a>
+      </div>
+      <div class="subagent-list">
+        @for (sa of subagents; track sa.name) {
+        <div class="subagent">
+          <div class="sa-avatar">{{ sa.initial }}</div>
+          <div class="sa-info">
+            <span class="sa-name">{{ sa.name }}</span>
+            <span class="sa-role">{{ sa.role }}</span>
+          </div>
+          <span class="status-dot {{ sa.status }}"></span>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- User conversation + chat input -->
+    <div class="panel panel-conversation">
+      <div class="panel-header">
+        <h2>User Conversation</h2>
+        <span class="live-badge">ONLINE</span>
+      </div>
+      <div class="chat-scroll">
+        @for (msg of messages(); track $index) {
+        <div class="chat-message {{ msg.author }}">
+          <div class="chat-avatar">
+            @if (msg.author === 'aurel') {
+            <img src="avatars/aurel-256.png" alt="Aurel avatar" />
+            } @else {
+            <span>{{ userInitial }}</span>
+            }
+          </div>
+          <div class="chat-bubble">
+            <span class="chat-text">{{ msg.text }}</span>
+            <span class="chat-time">{{ msg.time }}</span>
+          </div>
+        </div>
+        }
+      </div>
+      <div class="chat-input">
+        <input
+          type="text"
+          placeholder="Type your message..."
+          [value]="draft()"
+          (input)="draft.set($any($event.target).value)"
+          (keydown.enter)="send()"
+        />
+        <button class="send-btn" (click)="send()" [disabled]="sending()" aria-label="Send message">
+          @if (sending()) {
+          <span class="spinner"></span>
+          } @else {
+          <mat-icon>send</mat-icon>
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Subagent activity -->
+    <div class="panel panel-activity">
+      <div class="panel-header">
+        <h2>Subagent Activity</h2>
+        <a class="panel-link" href="#">Today</a>
+      </div>
+      <div class="activity-list">
+        @for (a of activities; track a.name) {
+        <div class="activity-item">
+          <div class="activity-meta">
+            <span class="activity-name">{{ a.name }}</span>
+            <span class="activity-task">{{ a.task }}</span>
+          </div>
+          <div class="activity-pct">{{ a.progress }}%</div>
+          <div class="progress-track">
+            <div
+              class="progress-fill"
+              [style.width.%]="a.progress"
+              [style.background]="a.accent"
+            ></div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- System insights -->
+    <div class="panel panel-insights">
+      <div class="panel-header">
+        <h2>System Insights</h2>
+      </div>
+      <div class="insight-grid">
+        @for (i of insights; track i.label) {
+        <div class="insight-card">
+          <mat-icon class="insight-icon">{{ i.icon }}</mat-icon>
+          <div class="insight-body">
+            <span class="insight-value">{{ i.value }}</span>
+            <span class="insight-label">{{ i.label }}</span>
+          </div>
+          <span class="insight-delta">{{ i.delta }}</span>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Active projects -->
+    <div class="panel panel-projects">
+      <div class="panel-header">
+        <h2>Active Projects</h2>
+        <a class="panel-link" href="#">View all</a>
+      </div>
+      <div class="project-list">
+        @for (p of projects; track p.name) {
+        <div class="project">
+          <div class="project-head">
+            <span class="project-name">{{ p.name }}</span>
+            <span class="project-pct">{{ p.progress }}%</span>
+          </div>
+          <span class="project-detail">{{ p.detail }}</span>
+          <div class="progress-track">
+            <div class="progress-fill gold" [style.width.%]="p.progress"></div>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+
+    <!-- Recent activities -->
+    <div class="panel panel-recent">
+      <div class="panel-header">
+        <h2>Recent Activities</h2>
+        <a class="panel-link" href="#">View all activities</a>
+      </div>
+      <div class="log-list">
+        @for (log of logs; track log.time) {
+        <div class="log-item">
+          <span class="log-icon {{ log.type }}">
+            @switch (log.type) {
+            @case ('done') { <mat-icon>check</mat-icon> }
+            @case ('alert') { <mat-icon>warning</mat-icon> }
+            @default { <mat-icon>info</mat-icon> }
+            }
+          </span>
+          <div class="log-body">
+            <span class="log-text">{{ log.text }}</span>
+            <span class="log-time">{{ log.time }}</span>
+          </div>
+        </div>
+        }
+      </div>
+    </div>
+  </section>
+</div>
