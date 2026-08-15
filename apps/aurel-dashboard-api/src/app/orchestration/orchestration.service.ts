@@ -1,5 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { TasksService } from '../tasks/tasks.service';
 
 export interface OrchestrationRequest {
   message: string;
@@ -43,12 +44,13 @@ export interface PlanStep {
 
 @Injectable()
 export class OrchestrationService {
-  // private readonly logger = new Logger(OrchestrationService.name);
+  private readonly logger = new Logger(OrchestrationService.name);
   private plans = new Map<string, Plan>();
   private planCounter = 0;
 
   constructor(
     private readonly eventEmitter: EventEmitter2,
+    private readonly tasksService: TasksService,
   ) {}
 
   async orchestrate(request: OrchestrationRequest): Promise<OrchestrationResponse> {
@@ -102,10 +104,7 @@ export class OrchestrationService {
   }
 
   private extractTaskEntities(message: string): Record<string, string> {
-    // Simple extraction - in production, use NLP or structured input
-    return {
-      description: message,
-    };
+    return { description: message };
   }
 
   private extractAgentEntities(message: string): Record<string, string> {
@@ -153,12 +152,83 @@ export class OrchestrationService {
     this.plans.set(planId, plan);
     this.eventEmitter.emit('plan.created', plan);
 
+    // Create real tasks for each step
+    for (const step of plan.steps) {
+      const task = this.tasksService.createOpencodeTask(
+        `${plan.title}: ${step.title}`,
+        step.description,
+        undefined,
+      );
+      task.planId = planId;
+      task.stepId = step.id;
+
+      // Find best agent for this step
+      const agent = this.findBestAgentForRole(step.agentRole);
+      if (agent) {
+        task.assignedAgentId = agent.id;
+        this.tasksService.updateTask(task.id, { assignedAgentId: agent.id });
+        this.logger.log(`Assigned task ${task.id} to agent ${agent.name} (${agent.role})`);
+      }
+    }
+
+    // Execute the first step immediately (analyze requirements)
+    const firstStep = plan.steps[0];
+    const firstTask = this.tasksService.getAllTasks().find(t => t.stepId === firstStep.id);
+    if (firstTask) {
+      this.logger.log(`Executing first step: ${firstTask.title}`);
+      this.tasksService.executeTask(firstTask.id).then(result => {
+        this.logger.log(`Step ${firstStep.id} completed: ${result.success ? 'success' : 'failed'}`);
+        if (result.success) {
+          this.updatePlanStep(planId, firstStep.id, { status: 'completed', result: result.output });
+          this.executeNextStep(planId, 1);
+        } else {
+          this.updatePlanStep(planId, firstStep.id, { status: 'failed', result: result.error });
+        }
+      });
+    }
+
     return {
-      reply: `I've created a new plan (**${planId}**) with ${plan.steps.length} steps. The planner will start analyzing requirements shortly.`,
+      reply: `I've created a new plan (**${planId}**) with ${plan.steps.length} steps. The first step (analyze requirements) is now executing via opencode.`,
       action: 'task_created',
       metadata: { planId },
       time,
     };
+  }
+
+  private findBestAgentForRole(role: string): { id: string; name: string; role: string } | undefined {
+    const roleMap: Record<string, string> = {
+      'planner': 'aurel',
+      'developer': 'lee',
+      'reviewer': 'mira',
+      'researcher': 'nova',
+      'data': 'dex',
+      'analytics': 'orion',
+      'integrations': 'kade',
+    };
+    const agentId = roleMap[role.toLowerCase()] || 'lee';
+    return { id: agentId, name: agentId, role };
+  }
+
+  private async executeNextStep(planId: string, stepIndex: number): Promise<void> {
+    const plan = this.plans.get(planId);
+    if (!plan || stepIndex >= plan.steps.length) return;
+
+    const step = plan.steps[stepIndex];
+    const task = this.tasksService.getAllTasks().find(t => t.stepId === step.id);
+    if (!task) return;
+
+    this.updatePlanStep(planId, step.id, { status: 'in_progress' });
+
+    this.tasksService.executeTask(task.id).then(result => {
+      this.logger.log(`Step ${step.id} completed: ${result.success ? 'success' : 'failed'}`);
+      if (result.success) {
+        this.updatePlanStep(planId, step.id, { status: 'completed', result: result.output });
+        this.executeNextStep(planId, stepIndex + 1);
+      } else {
+        this.updatePlanStep(planId, step.id, { status: 'failed', result: result.error });
+        plan.status = 'failed';
+      }
+    });
   }
 
   private async handleCheckStatus(
@@ -203,7 +273,6 @@ export class OrchestrationService {
   }
 
   private async handleListAgents(time: string): Promise<OrchestrationResponse> {
-    // This will be replaced by SubagentService data
     return {
       reply: 'Use the dashboard to see all subagents with their current status and roles.',
       action: 'info',
@@ -278,7 +347,6 @@ export class OrchestrationService {
     Object.assign(step, updates);
     plan.updatedAt = new Date();
 
-    // Check if all steps completed
     if (plan.steps.every((s) => s.status === 'completed')) {
       plan.status = 'completed';
     } else if (plan.steps.some((s) => s.status === 'in_progress')) {
