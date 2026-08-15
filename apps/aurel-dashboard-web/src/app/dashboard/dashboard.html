@@ -1,7 +1,7 @@
 <div class="dash">
   <!-- MISSION OVERVIEW -->
   <section class="grid-overview">
-    @for (stat of stats; track stat.label) {
+    @for (stat of stats(); track stat.label) {
     <div class="stat-card">
       <div class="stat-icon {{ stat.accent }}">
         <mat-icon>{{ stat.icon }}</mat-icon>
@@ -47,7 +47,7 @@
         <mat-icon class="more">more_vert</mat-icon>
       </div>
       <div class="mission-stats">
-        @for (m of stats.slice(0, 2); track m.label) {
+        @for (m of stats().slice(0, 2); track m.label) {
         <div class="mission-stat">
           <span class="mission-value">{{ m.value }}</span>
           <span class="mission-label">{{ m.label }}</span>
@@ -57,10 +57,10 @@
       <div class="progress-block">
         <div class="progress-row">
           <span>Overall Progress</span>
-          <span class="pct">85%</span>
+          <span class="pct">{{ stats()[2]?.value || '—' }}</span>
         </div>
         <div class="progress-track">
-          <div class="progress-fill gold" style="width: 85%"></div>
+          <div class="progress-fill gold" [style.width.%]="parseProgress(stats()[2]?.value || '0')"></div>
         </div>
       </div>
     </div>
@@ -72,7 +72,7 @@
         <span class="live-badge">LIVE</span>
       </div>
       <div class="waveform">
-        @for (h of waveform; track $index) {
+        @for (h of waveform(); track $index) {
         <div class="wave-bar" [style.height.px]="h" [style.animation-delay.ms]="$index * 40"></div>
         }
       </div>
@@ -86,9 +86,9 @@
         <a class="panel-link" href="#">View all</a>
       </div>
       <div class="subagent-list">
-        @for (sa of subagents; track sa.name) {
+        @for (sa of subagents(); track sa.id) {
         <div class="subagent">
-          <div class="sa-avatar">{{ sa.initial }}</div>
+          <div class="sa-avatar" [style.background]="sa.color">{{ sa.avatar || getAgentInitial(sa.name) }}</div>
           <div class="sa-info">
             <span class="sa-name">{{ sa.name }}</span>
             <span class="sa-role">{{ sa.role }}</span>
@@ -147,7 +147,7 @@
         <a class="panel-link" href="#">Today</a>
       </div>
       <div class="activity-list">
-        @for (a of activities; track a.name) {
+        @for (a of activities(); track a.name) {
         <div class="activity-item">
           <div class="activity-meta">
             <span class="activity-name">{{ a.name }}</span>
@@ -172,7 +172,7 @@
         <h2>System Insights</h2>
       </div>
       <div class="insight-grid">
-        @for (i of insights; track i.label) {
+        @for (i of insights(); track i.label) {
         <div class="insight-card">
           <mat-icon class="insight-icon">{{ i.icon }}</mat-icon>
           <div class="insight-body">
@@ -192,7 +192,7 @@
         <a class="panel-link" href="#">View all</a>
       </div>
       <div class="project-list">
-        @for (p of projects; track p.name) {
+        @for (p of projects(); track p.name) {
         <div class="project">
           <div class="project-head">
             <span class="project-name">{{ p.name }}</span>
@@ -214,7 +214,7 @@
         <a class="panel-link" href="#">View all activities</a>
       </div>
       <div class="log-list">
-        @for (log of logs; track log.time) {
+        @for (log of logs(); track log.time) {
         <div class="log-item">
           <span class="log-icon {{ log.type }}">
             @switch (log.type) {
