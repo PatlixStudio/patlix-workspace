@@ -12,6 +12,8 @@ import { SubagentController } from './subagents/subagent.controller';
 import { SubagentService } from './subagents/subagent.service';
 import { TasksController } from './tasks/tasks.controller';
 import { TasksService } from './tasks/tasks.service';
+import { MetricsController } from './metrics/metrics.controller';
+import { MetricsService } from './metrics/metrics.service';
 
 @Module({
   imports: [
@@ -25,6 +27,7 @@ import { TasksService } from './tasks/tasks.service';
     OrchestrationController,
     SubagentController,
     TasksController,
+    MetricsController,
   ],
   providers: [
     AppService,
@@ -32,6 +35,7 @@ import { TasksService } from './tasks/tasks.service';
     OrchestrationService,
     SubagentService,
     TasksService,
+    MetricsService,
   ],
 })
 export class AppModule {}
