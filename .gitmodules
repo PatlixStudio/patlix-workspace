@@ -31,3 +31,12 @@
 [submodule "apps/patlix-world-web"]
 	path = apps/patlix-world-web
 	url = git@github.com:PatlixStudio/patlix-world-web.git
+[submodule "apps/patlix-people-api"]
+	path = apps/patlix-people-api
+	url = git@github.com:PatlixStudio/patlix-people-api.git
+[submodule "apps/patlix-people-web"]
+	path = apps/patlix-people-web
+	url = git@github.com:PatlixStudio/patlix-people-web.git
+[submodule "libs/patlix-people-shared"]
+	path = libs/patlix-people-shared
+	url = git@github.com:PatlixStudio/patlix-people-shared.git
