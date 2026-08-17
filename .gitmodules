@@ -37,3 +37,12 @@
 [submodule "apps/aurel-dashboard-web"]
 	path = apps/aurel-dashboard-web
 	url = git@github.com:PatlixStudio/aurel-dashboard-web.git
+[submodule "apps/patlix-people-api"]
+	path = apps/patlix-people-api
+	url = git@github.com:PatlixStudio/patlix-people-api.git
+[submodule "apps/patlix-people-web"]
+	path = apps/patlix-people-web
+	url = git@github.com:PatlixStudio/patlix-people-web.git
+[submodule "libs/patlix-people-shared"]
+	path = libs/patlix-people-shared
+	url = git@github.com:PatlixStudio/patlix-people-shared.git

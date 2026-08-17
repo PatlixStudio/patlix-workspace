@@ -64,9 +64,10 @@ Every project owns a **dedicated port pair** — API on `30xx`, web on `42xx` (w
 | falina                             | 3002 | 4202 |
 | aurel-dashboard                    | 3003 | 4203 |
 | patlix-world                       | 3004 | 4204 |
-| _next free_                        | 3005 | 4205 |
+| patlix-people                      | 3005 | 4205 |
+| _next free_                        | 3006 | 4206 |
 
-- **New project → next free pair:** API `3005`, web `4205` (increment until unused). Then update this table, the `Common commands` section below, the app README, and any proxy/env files.
+- **New project → next free pair:** API `3006`, web `4206` (increment until unused). Then update this table, the `Common commands` section below, the app README, and any proxy/env files.
 - **API port** = `process.env.PORT ?? <api>` in `src/main.ts`; **web port** = `"port"` in the Nx serve config (`project.json` / `angular.json`); web proxy target must equal the API port.
 - Reserved infra (do not reassign): Postgres `5432`, Redis `6379`, patlix-speaches `8969`.
 
@@ -82,6 +83,8 @@ Every project owns a **dedicated port pair** — API on `30xx`, web on `42xx` (w
 - `npx nx serve aurel-dashboard-web` → :4203
 - `npx nx serve patlix-world-api` → :3004 (needs its own deps: `npm install --prefix apps/patlix-world-api`)
 - `npx nx serve patlix-world-web` → :4204 (needs its own deps: `npm install --prefix apps/patlix-world-web`)
+- `npx nx serve patlix-people-api` → :3005 (needs its own deps: `npm install --prefix apps/patlix-people-api`), Swagger at `/api/docs`
+- `npx nx serve patlix-people-web` → :4205 (needs its own deps: `npm install --prefix apps/patlix-people-web`)
 - `npx nx lint|test|build <project>` for a single project
 - `npx nx run-many -t lint test build --parallel=1` for all quality gates
 - `npx nx g @nx/angular:app <name> --directory=apps/<name> --style=scss --routing --unitTestRunner=vitest-angular`
@@ -91,7 +94,7 @@ Every project owns a **dedicated port pair** — API on `30xx`, web on `42xx` (w
 ## Database & shared infra
 
 - Postgres runs in Docker Desktop on Windows at `localhost:5432` — container `patlix-postgres` (superuser `arkadion`/`arkadion`, volume `patlix_pgdata`). Start/stop via `docker compose` at the workspace root (also manages `patlix-speaches` on :8969).
-- Each project uses its own DB inside the shared Postgres: `patlix` (role `patlix`, `apps/patlix-api/.env`), `arkadion` (`apps/arkadion-api/.env`), `falina` (`apps/falina-api/.env`), `patlixworld` (`apps/patlix-world-api/.env`). `aurel-dashboard-api` is stateless (in-memory) — no DB.
+- Each project uses its own DB inside the shared Postgres: `patlix` (role `patlix`, `apps/patlix-api/.env`), `arkadion` (`apps/arkadion-api/.env`), `falina` (`apps/falina-api/.env`), `patlixworld` (`apps/patlix-world-api/.env`), and `patlixpeople` (`apps/patlix-people-api/.env`, role `patlixpeople`). `aurel-dashboard-api` is stateless (in-memory) — no DB.
 - Schema auto-syncs (`synchronize: true`) — dev only.
 
 ## graphify
