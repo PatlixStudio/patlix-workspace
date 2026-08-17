@@ -48,6 +48,10 @@ This WSL2 box has ~3.8 GB RAM. Nx tasks can OOM / hit vitest worker timeouts whe
 - `npx nx serve web` → dashboard on :4200 (proxies `/api` → :3000)
 - `npx nx serve arkadion-api` → :3001 (needs its own deps: `npm install --prefix apps/arkadion-api`)
 - `npx nx serve arkadion-web` → :4201 (needs its own deps: `npm install --prefix apps/arkadion-web`)
+- `npx nx serve falina-api` → :3002, `npx nx serve falina-web` → :4202
+- `npx nx serve patlix-world-api` → :3003, `npx nx serve patlix-world-web` → :4203
+- `npx nx serve patlix-people-api` → :3004, Swagger at `/api/docs`
+- `npx nx serve patlix-people-web` → :4204 (Angular + Ionic + Capacitor)
 - `npx nx lint|test|build <project>` for a single project
 - `npx nx run-many -t lint test build --parallel=1` for all quality gates
 - `npx nx g @nx/angular:app <name> --directory=apps/<name> --style=scss --routing --unitTestRunner=vitest-angular`
@@ -57,7 +61,7 @@ This WSL2 box has ~3.8 GB RAM. Nx tasks can OOM / hit vitest worker timeouts whe
 ## Database & shared infra
 
 - Postgres runs in Docker Desktop on Windows at `localhost:5432` — container `patlix-postgres` (superuser `arkadion`/`arkadion`, volume `patlix_pgdata`). Start/stop via `docker compose` at the workspace root (also manages `patlix-speaches` on :8969).
-- Each project uses its own DB inside the shared Postgres: `patlix` (role `patlix`, `apps/api/.env`) and `arkadion` (`apps/arkadion-api/.env`).
+- Each project uses its own DB inside the shared Postgres: `patlix` (role `patlix`, `apps/api/.env`), `arkadion` (`apps/arkadion-api/.env`), `falina` (`apps/falina-api/.env`), and `patlixpeople` (`apps/patlix-people-api/.env`, role `patlixpeople`).
 - Schema auto-syncs (`synchronize: true`) — dev only.
 
 ## graphify
