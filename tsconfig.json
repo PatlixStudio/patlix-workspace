@@ -7,7 +7,7 @@
       "path": "./libs/shared"
     },
     {
-      "path": "./apps/api"
+      "path": "./apps/patlix-api"
     },
     {
       "path": "./apps/aurel-dashboard-api"

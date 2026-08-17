@@ -1,8 +1,8 @@
-[submodule "apps/web"]
-	path = apps/web
+[submodule "apps/patlix-web"]
+	path = apps/patlix-web
 	url = git@github.com:PatlixStudio/patlix-web.git
-[submodule "apps/api"]
-	path = apps/api
+[submodule "apps/patlix-api"]
+	path = apps/patlix-api
 	url = git@github.com:PatlixStudio/patlix-api.git
 [submodule "libs/shared"]
 	path = libs/shared

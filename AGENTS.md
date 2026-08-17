@@ -34,26 +34,37 @@ Stack and rules for this workspace:
 - npm is the package manager. Strict TypeScript, ESLint + Prettier, tests (Jest for api, Vitest for web/shared).
 - Module boundaries are enforced via `scope:*` tags in `eslint.config.mjs` (`scope:web`, `scope:api`, `scope:shared`). `arkadion-*` projects run their own tooling via `nx:run-commands` and are not bound to the patlix scope tags.
 
+## Design rules (mandatory — invoke the `design-guider` skill)
+
+Every visual/UI decision for a new or changed Angular project follows the `design-guider` skill at `.agents/skills/design-guider/SKILL.md`. **Read and apply it before any scaffolding, theming, or styling.**
+
+- **Never copy an existing project** to create a new unrelated one. New projects are scaffolded fresh from generators (`nx-generate` skill); copying is only allowed between genuinely related projects with explicit user approval.
+- **Always ask before creating a UI project** (use the `question` tool): (1) UI framework — **Ionic** vs **Angular Material**; (2) icon provider — Google Icons (Material Symbols), Font Awesome, Ionicons, or other.
+- **Always build a custom theme** — never ship a default theme. Follow the chosen framework's theming system: Material M3 `mat.theme` tokens (tonal palettes, not hex strings) for Material; CSS custom properties (`--ion-color-*`) for Ionic. No hard-coded brand hexes in component styles.
+- **One icon provider per app**, used consistently; never mix providers in the same screen.
+- Apply the answers everywhere: theme/global stylesheet, component styles, shell, and any branded component.
+- **Log every new project** to shared cross-agent memory `~/memory/conversations/YYYY-MM-DD.md` (name, path, purpose, framework, icon provider, ports, key decisions) and update the `README.md` projects table.
+
 ## Resource-constrained machine (important)
 
 This WSL2 box has ~3.8 GB RAM. Nx tasks can OOM / hit vitest worker timeouts when run in parallel:
 
 - Always run multi-project task batches with `--parallel=1`:
   `npx nx run-many -t lint test build --parallel=1`
-- Prefer serving one app at a time. `web:test` is heavy (bundles the Angular app) — run it alone.
+- Prefer serving one app at a time. `patlix-web:test` is heavy (bundles the Angular app) — run it alone.
 
 ## Port allocation (mandatory rule)
 
 Every project owns a **dedicated port pair** — API on `30xx`, web on `42xx` (web = api + 1200). Never reuse another project's port; never change an assigned port unless it collides with another project.
 
-| Project              | API   | Web   |
-| -------------------- | ----- | ----- |
-| patlix (`api`/`web`) | 3000  | 4200  |
-| arkadion             | 3001  | 4201  |
-| falina               | 3002  | 4202  |
-| aurel-dashboard      | 3003  | 4203  |
-| patlix-world         | 3004  | 4204  |
-| *next free*          | 3005  | 4205  |
+| Project                            | API  | Web  |
+| ---------------------------------- | ---- | ---- |
+| patlix (`patlix-api`/`patlix-web`) | 3000 | 4200 |
+| arkadion                           | 3001 | 4201 |
+| falina                             | 3002 | 4202 |
+| aurel-dashboard                    | 3003 | 4203 |
+| patlix-world                       | 3004 | 4204 |
+| _next free_                        | 3005 | 4205 |
 
 - **New project → next free pair:** API `3005`, web `4205` (increment until unused). Then update this table, the `Common commands` section below, the app README, and any proxy/env files.
 - **API port** = `process.env.PORT ?? <api>` in `src/main.ts`; **web port** = `"port"` in the Nx serve config (`project.json` / `angular.json`); web proxy target must equal the API port.
@@ -61,8 +72,8 @@ Every project owns a **dedicated port pair** — API on `30xx`, web on `42xx` (w
 
 ## Common commands
 
-- `npx nx serve api` → API on :3000, Swagger at `/api/docs`
-- `npx nx serve web` → dashboard on :4200 (proxies `/api` → :3000)
+- `npx nx serve patlix-api` → API on :3000, Swagger at `/api/docs`
+- `npx nx serve patlix-web` → dashboard on :4200 (proxies `/api` → :3000)
 - `npx nx serve arkadion-api` → :3001 (needs its own deps: `npm install --prefix apps/arkadion-api`)
 - `npx nx serve arkadion-web` → :4201 (needs its own deps: `npm install --prefix apps/arkadion-web`)
 - `npx nx serve falina-api` → :3002 (needs its own deps: `npm install --prefix apps/falina-api`)
@@ -80,7 +91,7 @@ Every project owns a **dedicated port pair** — API on `30xx`, web on `42xx` (w
 ## Database & shared infra
 
 - Postgres runs in Docker Desktop on Windows at `localhost:5432` — container `patlix-postgres` (superuser `arkadion`/`arkadion`, volume `patlix_pgdata`). Start/stop via `docker compose` at the workspace root (also manages `patlix-speaches` on :8969).
-- Each project uses its own DB inside the shared Postgres: `patlix` (role `patlix`, `apps/api/.env`), `arkadion` (`apps/arkadion-api/.env`), `falina` (`apps/falina-api/.env`), `patlixworld` (`apps/patlix-world-api/.env`). `aurel-dashboard-api` is stateless (in-memory) — no DB.
+- Each project uses its own DB inside the shared Postgres: `patlix` (role `patlix`, `apps/patlix-api/.env`), `arkadion` (`apps/arkadion-api/.env`), `falina` (`apps/falina-api/.env`), `patlixworld` (`apps/patlix-world-api/.env`). `aurel-dashboard-api` is stateless (in-memory) — no DB.
 - Schema auto-syncs (`synchronize: true`) — dev only.
 
 ## graphify

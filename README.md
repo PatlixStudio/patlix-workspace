@@ -22,8 +22,8 @@ Conventions applied to **every** project:
 
 | Project               | Path                       | Role                                                                                                         | Port |
 | --------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------ | ---- |
-| `patlix-web`          | `apps/web`                 | Dashboard: login → launch all workspace projects. Slot reserved for the future **AI-Dashboard** (UX-driven). | 4200 |
-| `patlix-api`          | `apps/api`                 | REST API: JWT auth + projects CRUD, Swagger at `/api/docs`.                                                  | 3000 |
+| `patlix-web`          | `apps/patlix-web`          | Dashboard: login → launch all workspace projects. Slot reserved for the future **AI-Dashboard** (UX-driven). | 4200 |
+| `patlix-api`          | `apps/patlix-api`          | REST API: JWT auth + projects CRUD, Swagger at `/api/docs`.                                                  | 3000 |
 | `patlix-shared`       | `libs/shared`              | Shared DTOs/types (`@patlix/shared`).                                                                        | —    |
 | `arkadion-web`        | `apps/arkadion-web`        | Arkadion AI assistant UI: chat with 21 personas (Angular, standalone repo).                                  | 4201 |
 | `arkadion-api`        | `apps/arkadion-api`        | Arkadion backend: entities, chat (WebSocket), LLM chain, speech (NestJS, standalone repo).                   | 3001 |
@@ -46,10 +46,10 @@ npm install --prefix apps/arkadion-api    # arkadion has its own dependencies
 npm install --prefix apps/arkadion-web
 
 # Start the API (http://localhost:3000, docs at /api/docs)
-npx nx serve api
+npx nx serve patlix-api
 
 # Start the web dashboard (http://localhost:4200)
-npx nx serve web
+npx nx serve patlix-web
 
 # Start Arkadion (API on :3001, web on :4201)
 npx nx serve arkadion-api
@@ -67,7 +67,7 @@ npx nx serve aurel-dashboard-api
 npx nx serve aurel-dashboard-web
 ```
 
-The web dev server proxies `/api` to the API (see `apps/web/proxy.conf.json`). `arkadion-web` calls `arkadion-api` directly at `http://localhost:3001/api` (CORS is enabled on the backend).
+The web dev server proxies `/api` to the API (see `apps/patlix-web/proxy.conf.json`). `arkadion-web` calls `arkadion-api` directly at `http://localhost:3001/api` (CORS is enabled on the backend).
 
 ### Default login
 
@@ -76,7 +76,7 @@ The API seeds an admin user on first start:
 - **email:** `admin@patlix.dev`
 - **password:** `admin123`
 
-(override via `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` in `apps/api/.env`)
+(override via `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD` in `apps/patlix-api/.env`)
 
 ## PostgreSQL & shared infra (local dev)
 
@@ -110,9 +110,9 @@ docker exec patlix-postgres psql -U arkadion -d postgres -c "CREATE DATABASE pat
 npx nx run-many -t lint test build --parallel=1
 
 # Single project
-npx nx lint web
-npx nx test api
-npx nx build web
+npx nx lint patlix-web
+npx nx test patlix-api
+npx nx build patlix-web
 
 # Generate a new app/lib
 npx nx g @nx/angular:app <name> --directory=apps/<name> --style=scss --routing
@@ -124,8 +124,8 @@ npx nx g @nx/js:lib <name> --directory=libs/<name> --importPath=@patlix/<name>
 
 - This workspace is one git repo: `git@github.com:PatlixStudio/patlix-workspace.git`.
 - Each project is a **submodule** pointing at its own repo:
-  - `PatlixStudio/patlix-web` → `apps/web`
-  - `PatlixStudio/patlix-api` → `apps/api`
+  - `PatlixStudio/patlix-web` → `apps/patlix-web`
+  - `PatlixStudio/patlix-api` → `apps/patlix-api`
   - `PatlixStudio/patlix-shared` → `libs/shared`
   - `PatlixStudio/arkadion-web` → `apps/arkadion-web`
   - `PatlixStudio/arkadion-api` → `apps/arkadion-api`
