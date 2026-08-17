@@ -34,6 +34,10 @@ Conventions applied to **every** project:
 | `aurel-dashboard-api` | `apps/aurel-dashboard-api` | Aurel backend: orchestration, subagents, tasks, chat; Swagger at `/api/docs` (NestJS, standalone repo).      | 3003 |
 | `patlix-world-web`    | `apps/patlix-world-web`    | Patlix World — open-world AI workforce UI (Angular, standalone repo).                                        | 4204 |
 | `patlix-world-api`    | `apps/patlix-world-api`    | Patlix World backend: agents, Aurel orchestration, tasks, tools, events (NestJS, standalone repo).           | 3004 |
+| `patlix-world-shared` | `libs/patlix-world-shared` | Patlix World shared contracts (`@patlix/world-shared`).                                                      | —    |
+| `patlix-people-web`   | `apps/patlix-people-web`   | Patlix People — social platform UI (Angular + Ionic + Capacitor, custom design system).                      | 4205 |
+| `patlix-people-api`   | `apps/patlix-people-api`   | Patlix People backend: auth, profiles, likes, boost (NestJS, standalone repo).                               | 3005 |
+| `patlix-people-shared`| `libs/patlix-people-shared`| Patlix People shared contracts (`@patlix-people/shared`).                                                    | —    |
 
 > Naming rule: Patlix's own apps keep the short names `patlix-web` / `patlix-api`. Feature projects carried into the workspace keep `<name>-web` / `<name>-api` (e.g. `arkadion-web` / `arkadion-api`).
 
@@ -65,6 +69,18 @@ npx nx serve falina-web
 npm install --prefix apps/aurel-dashboard-api
 npx nx serve aurel-dashboard-api
 npx nx serve aurel-dashboard-web
+
+# Start Patlix World (API on :3004, web on :4204)
+npm install --prefix apps/patlix-world-api
+npm install --prefix apps/patlix-world-web
+npx nx serve patlix-world-api
+npx nx serve patlix-world-web
+
+# Start Patlix People (API on :3005, docs at /api/docs, web on :4205)
+npm install --prefix apps/patlix-people-api
+npm install --prefix apps/patlix-people-web
+npx nx serve patlix-people-api
+npx nx serve patlix-people-web
 ```
 
 The web dev server proxies `/api` to the API (see `apps/patlix-web/proxy.conf.json`). `arkadion-web` calls `arkadion-api` directly at `http://localhost:3001/api` (CORS is enabled on the backend).
@@ -92,6 +108,10 @@ docker compose down         # stops them (volumes are kept)
 - Each project uses its own database inside the shared Postgres:
   - **`patlix`** (role `patlix` / password `patlix`) → `patlix-api`
   - **`arkadion`** → `arkadion-api`
+  - **`falina`** → `falina-api`
+  - **`patlixworld`** → `patlix-world-api`
+  - **`patlixpeople`** (role `patlixpeople`) → `patlix-people-api`
+- `aurel-dashboard-api` is stateless (in-memory) — no DB.
 - Connection settings live in each app's `.env` (templates: `.env.example`).
 
 Create the `patlix` role/database once if missing:
@@ -136,6 +156,10 @@ npx nx g @nx/js:lib <name> --directory=libs/<name> --importPath=@patlix/<name>
   - `PatlixStudio/aurel-dashboard-api` → `apps/aurel-dashboard-api`
   - `PatlixStudio/patlix-world-web` → `apps/patlix-world-web`
   - `PatlixStudio/patlix-world-api` → `apps/patlix-world-api`
+  - `PatlixStudio/patlix-world-shared` → `libs/patlix-world-shared`
+  - `PatlixStudio/patlix-people-web` → `apps/patlix-people-web`
+  - `PatlixStudio/patlix-people-api` → `apps/patlix-people-api`
+  - `PatlixStudio/patlix-people-shared` → `libs/patlix-people-shared`
 
 ```bash
 git submodule update --init --recursive
