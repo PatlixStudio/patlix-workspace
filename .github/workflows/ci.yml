@@ -34,6 +34,10 @@ jobs:
         with:
           fetch-depth: 0
           submodules: recursive
+          # GITHUB_TOKEN cannot read the private submodule repos
+          # (aurel-dashboard-*, patlix-people-*), so use a PAT with
+          # repo/read scope for submodule checkout.
+          token: ${{ secrets.GH_SUBMODULE_PAT }}
 
       # Cache node_modules
       - uses: actions/setup-node@v5
