@@ -10,7 +10,13 @@
       "path": "./apps/api"
     },
     {
-      "path": "./apps/web"
+      "path": "./apps/aurel-dashboard-api-e2e"
+    },
+    {
+      "path": "./libs/aurel-dashboard-shared"
+    },
+    {
+      "path": "./apps/aurel-dashboard-api"
     }
   ],
   "compilerOptions": {}

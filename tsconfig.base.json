@@ -20,7 +20,8 @@
     "noUncheckedSideEffectImports": false,
     "types": ["*"],
     "paths": {
-      "@patlix/shared": ["./libs/shared/src/index.ts"]
+      "@patlix/shared": ["./libs/shared/src/index.ts"],
+      "@patlix-people/shared": ["./libs/patlix-people-shared/src/index.ts"]
     }
   }
 }
