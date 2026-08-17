@@ -60,3 +60,6 @@ __screenshots__/
 
 # graphify knowledge graph (regenerable)
 graphify-out/
+
+# agent coordination lock (shared workspace protocol)
+.agent-lock/
