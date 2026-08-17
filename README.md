@@ -4,12 +4,12 @@ The primary Nx monorepo for all PatlixStudio projects. It hosts the **Patlix das
 
 ## Stack & conventions
 
-| Layer | Technology |
-| --- | --- |
-| Frontend | Angular (standalone) + Angular Material **M3** + SCSS |
-| Backend | NestJS + **TypeORM** + **PostgreSQL** |
-| Workspace | Nx (preset `ts`), npm, no Nx Cloud (local cache) |
-| Tooling | ESLint, Prettier, Jest (api) / Vitest (web, shared), strict TypeScript |
+| Layer     | Technology                                                             |
+| --------- | ---------------------------------------------------------------------- |
+| Frontend  | Angular (standalone) + Angular Material **M3** + SCSS                  |
+| Backend   | NestJS + **TypeORM** + **PostgreSQL**                                  |
+| Workspace | Nx (preset `ts`), npm, no Nx Cloud (local cache)                       |
+| Tooling   | ESLint, Prettier, Jest (api) / Vitest (web, shared), strict TypeScript |
 
 Conventions applied to **every** project:
 
@@ -20,16 +20,20 @@ Conventions applied to **every** project:
 
 ## Projects
 
-| Project | Path | Role | Port |
-| --- | --- | --- | --- |
-| `patlix-web` | `apps/web` | Dashboard: login → launch all workspace projects. Slot reserved for the future **AI-Dashboard** (UX-driven). | 4200 |
-| `patlix-api` | `apps/api` | REST API: JWT auth + projects CRUD, Swagger at `/api/docs`. | 3000 |
-| `patlix-shared` | `libs/shared` | Shared DTOs/types (`@patlix/shared`). | — |
-| `arkadion-web` | `apps/arkadion-web` | Arkadion AI assistant UI: chat with 21 personas (Angular, standalone repo). | 4201 |
-| `arkadion-api` | `apps/arkadion-api` | Arkadion backend: entities, chat (WebSocket), LLM chain, speech (NestJS, standalone repo). | 3001 |
-| `falina-web` | `apps/falina-web` | Falina — Your Personal Oracle (Angular + Ionic + Capacitor mobile app, custom design system). | 4202 |
-| `falina-api` | `apps/falina-api` | Falina backend: coffee/tarot/astrology readings, Oracle, AI abstraction (NestJS, standalone repo). | 3002 |
-| `falina-shared` | `libs/falina-shared` | Falina shared contracts (`@falina/shared`). | — |
+| Project               | Path                       | Role                                                                                                         | Port |
+| --------------------- | -------------------------- | ------------------------------------------------------------------------------------------------------------ | ---- |
+| `patlix-web`          | `apps/web`                 | Dashboard: login → launch all workspace projects. Slot reserved for the future **AI-Dashboard** (UX-driven). | 4200 |
+| `patlix-api`          | `apps/api`                 | REST API: JWT auth + projects CRUD, Swagger at `/api/docs`.                                                  | 3000 |
+| `patlix-shared`       | `libs/shared`              | Shared DTOs/types (`@patlix/shared`).                                                                        | —    |
+| `arkadion-web`        | `apps/arkadion-web`        | Arkadion AI assistant UI: chat with 21 personas (Angular, standalone repo).                                  | 4201 |
+| `arkadion-api`        | `apps/arkadion-api`        | Arkadion backend: entities, chat (WebSocket), LLM chain, speech (NestJS, standalone repo).                   | 3001 |
+| `falina-web`          | `apps/falina-web`          | Falina — Your Personal Oracle (Angular + Ionic + Capacitor mobile app, custom design system).                | 4202 |
+| `falina-api`          | `apps/falina-api`          | Falina backend: coffee/tarot/astrology readings, Oracle, AI abstraction (NestJS, standalone repo).           | 3002 |
+| `falina-shared`       | `libs/falina-shared`       | Falina shared contracts (`@falina/shared`).                                                                  | —    |
+| `aurel-dashboard-web` | `apps/aurel-dashboard-web` | Aurel AI Command Center — analytics & monitoring dashboard (Angular, standalone repo).                       | 4203 |
+| `aurel-dashboard-api` | `apps/aurel-dashboard-api` | Aurel backend: orchestration, subagents, tasks, chat; Swagger at `/api/docs` (NestJS, standalone repo).      | 3003 |
+| `patlix-world-web`    | `apps/patlix-world-web`    | Patlix World — open-world AI workforce UI (Angular, standalone repo).                                        | 4204 |
+| `patlix-world-api`    | `apps/patlix-world-api`    | Patlix World backend: agents, Aurel orchestration, tasks, tools, events (NestJS, standalone repo).           | 3004 |
 
 > Naming rule: Patlix's own apps keep the short names `patlix-web` / `patlix-api`. Feature projects carried into the workspace keep `<name>-web` / `<name>-api` (e.g. `arkadion-web` / `arkadion-api`).
 
@@ -56,6 +60,11 @@ npm install --prefix apps/falina-api
 npm install --prefix apps/falina-web
 npx nx serve falina-api
 npx nx serve falina-web
+
+# Start Aurel Dashboard (API on :3003, docs at /api/docs, web on :4203)
+npm install --prefix apps/aurel-dashboard-api
+npx nx serve aurel-dashboard-api
+npx nx serve aurel-dashboard-web
 ```
 
 The web dev server proxies `/api` to the API (see `apps/web/proxy.conf.json`). `arkadion-web` calls `arkadion-api` directly at `http://localhost:3001/api` (CORS is enabled on the backend).
@@ -123,6 +132,10 @@ npx nx g @nx/js:lib <name> --directory=libs/<name> --importPath=@patlix/<name>
   - `PatlixStudio/falina-web` → `apps/falina-web`
   - `PatlixStudio/falina-api` → `apps/falina-api`
   - `PatlixStudio/falina-shared` → `libs/falina-shared`
+  - `PatlixStudio/aurel-dashboard-web` → `apps/aurel-dashboard-web`
+  - `PatlixStudio/aurel-dashboard-api` → `apps/aurel-dashboard-api`
+  - `PatlixStudio/patlix-world-web` → `apps/patlix-world-web`
+  - `PatlixStudio/patlix-world-api` → `apps/patlix-world-api`
 
 ```bash
 git submodule update --init --recursive

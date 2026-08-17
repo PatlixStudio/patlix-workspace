@@ -10,7 +10,13 @@
       "path": "./apps/api"
     },
     {
-      "path": "./apps/web"
+      "path": "./apps/aurel-dashboard-api"
+    },
+    {
+      "path": "./libs/patlix-world-shared"
+    },
+    {
+      "path": "./libs/falina-shared"
     }
   ],
   "compilerOptions": {}

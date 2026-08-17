@@ -31,3 +31,9 @@
 [submodule "apps/patlix-world-web"]
 	path = apps/patlix-world-web
 	url = git@github.com:PatlixStudio/patlix-world-web.git
+[submodule "apps/aurel-dashboard-api"]
+	path = apps/aurel-dashboard-api
+	url = git@github.com:PatlixStudio/aurel-dashboard-api.git
+[submodule "apps/aurel-dashboard-web"]
+	path = apps/aurel-dashboard-web
+	url = git@github.com:PatlixStudio/aurel-dashboard-web.git

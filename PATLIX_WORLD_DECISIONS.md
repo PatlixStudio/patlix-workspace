@@ -18,7 +18,7 @@
    - `apps/patlix-world-api` → https://github.com/PatlixStudio/patlix-world-api
    - `apps/patlix-world-web` → https://github.com/PatlixStudio/patlix-world-web
    - `libs/patlix-world-shared` → https://github.com/PatlixStudio/patlix-world-shared
-4. **Ports (avoid collisions):** arkadion=:3000/:4201, falina=:3002/:4202, **patlix-world=:3003/:4203**.
+4. **Ports (avoid collisions):** arkadion=:3001/:4201, falina=:3002/:4202, **aurel-dashboard=:3003/:4203, patlix-world=:3004/:4204**.
 5. **Shared lib import:** `@patlixworld/shared` via `file:../../libs/patlix-world-shared`; built with `tsc` before api start (see api `prestart`/`prestart:dev`).
 6. **DB:** user `patlixworld` / password `patlixworld` / db `patlixworld` on localhost:5432, `synchronize:true` dev-only.
 7. **Assets:** use ready models as placeholders (Mixamo-compatible GLB with animations). User can download and place them under the project (web `public/`). Runtime = GLB/GLTF; FBX/Blender/Mixamo only as source.

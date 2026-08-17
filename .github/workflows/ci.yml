@@ -13,16 +13,27 @@ permissions:
 jobs:
   main:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: arkadion
+          POSTGRES_PASSWORD: arkadion
+          POSTGRES_DB: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U arkadion"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
     steps:
       - uses: actions/checkout@v5
         with:
-          filter: tree:0
           fetch-depth: 0
-
-      # This enables task distribution via Nx Cloud
-      # Run this command as early as possible, before dependencies are installed
-      # Learn more at https://nx.dev/docs/reference/nx-cloud-cli#npx-nxcloud-startcirun
-      - run: npx nx start-ci-run --distribute-on="3 linux-medium-js" --stop-agents-after="e2e"
+          submodules: recursive
 
       # Cache node_modules
       - uses: actions/setup-node@v5
@@ -32,9 +43,22 @@ jobs:
 
       - run: npm ci
 
-      # Prepend any command with "nx record --" to record its logs to Nx Cloud
-      - run: npx nx record -- npx nx format:check --base="remotes/origin/main"
-      - run: npx nx run-many -t lint test build typecheck e2e
-      # Nx Cloud recommends fixes for failures to help you get CI green faster. Learn more: https://nx.dev/docs/features/ci-features/self-healing-ci
-      - run: npx nx fix-ci
-        if: always()
+      # Each feature project is a git submodule with its own dependencies
+      - run: npm install --prefix apps/arkadion-api
+      - run: npm install --prefix apps/arkadion-web
+      - run: npm install --prefix apps/falina-api
+      - run: npm install --prefix apps/falina-web
+      - run: npm install --prefix libs/falina-shared
+      - run: npm install --prefix apps/patlix-world-api
+      - run: npm install --prefix apps/patlix-world-web
+      - run: npm install --prefix libs/patlix-world-shared
+      - run: npm install --prefix apps/aurel-dashboard-api
+
+      # Provision databases used by e2e suites
+      - name: Create e2e databases
+        run: |
+          docker exec -i ${{ job.services.postgres.id }} psql -U arkadion -d postgres -c "CREATE ROLE falina LOGIN PASSWORD 'falina';" -c "CREATE DATABASE falina OWNER falina;"
+          docker exec -i ${{ job.services.postgres.id }} psql -U arkadion -d postgres -c "CREATE ROLE patlixworld LOGIN PASSWORD 'patlixworld';" -c "CREATE DATABASE patlixworld OWNER patlixworld;"
+
+      - run: npx nx format:check --base="remotes/origin/main"
+      - run: npx nx run-many -t lint test build typecheck e2e --parallel=1

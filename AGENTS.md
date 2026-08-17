@@ -42,12 +42,35 @@ This WSL2 box has ~3.8 GB RAM. Nx tasks can OOM / hit vitest worker timeouts whe
   `npx nx run-many -t lint test build --parallel=1`
 - Prefer serving one app at a time. `web:test` is heavy (bundles the Angular app) — run it alone.
 
+## Port allocation (mandatory rule)
+
+Every project owns a **dedicated port pair** — API on `30xx`, web on `42xx` (web = api + 1200). Never reuse another project's port; never change an assigned port unless it collides with another project.
+
+| Project              | API   | Web   |
+| -------------------- | ----- | ----- |
+| patlix (`api`/`web`) | 3000  | 4200  |
+| arkadion             | 3001  | 4201  |
+| falina               | 3002  | 4202  |
+| aurel-dashboard      | 3003  | 4203  |
+| patlix-world         | 3004  | 4204  |
+| *next free*          | 3005  | 4205  |
+
+- **New project → next free pair:** API `3005`, web `4205` (increment until unused). Then update this table, the `Common commands` section below, the app README, and any proxy/env files.
+- **API port** = `process.env.PORT ?? <api>` in `src/main.ts`; **web port** = `"port"` in the Nx serve config (`project.json` / `angular.json`); web proxy target must equal the API port.
+- Reserved infra (do not reassign): Postgres `5432`, Redis `6379`, patlix-speaches `8969`.
+
 ## Common commands
 
 - `npx nx serve api` → API on :3000, Swagger at `/api/docs`
 - `npx nx serve web` → dashboard on :4200 (proxies `/api` → :3000)
 - `npx nx serve arkadion-api` → :3001 (needs its own deps: `npm install --prefix apps/arkadion-api`)
 - `npx nx serve arkadion-web` → :4201 (needs its own deps: `npm install --prefix apps/arkadion-web`)
+- `npx nx serve falina-api` → :3002 (needs its own deps: `npm install --prefix apps/falina-api`)
+- `npx nx serve falina-web` → :4202 (needs its own deps: `npm install --prefix apps/falina-web`)
+- `npx nx serve aurel-dashboard-api` → :3003 (needs its own deps: `npm install --prefix apps/aurel-dashboard-api`), Swagger at `/api/docs`
+- `npx nx serve aurel-dashboard-web` → :4203
+- `npx nx serve patlix-world-api` → :3004 (needs its own deps: `npm install --prefix apps/patlix-world-api`)
+- `npx nx serve patlix-world-web` → :4204 (needs its own deps: `npm install --prefix apps/patlix-world-web`)
 - `npx nx lint|test|build <project>` for a single project
 - `npx nx run-many -t lint test build --parallel=1` for all quality gates
 - `npx nx g @nx/angular:app <name> --directory=apps/<name> --style=scss --routing --unitTestRunner=vitest-angular`
@@ -57,7 +80,7 @@ This WSL2 box has ~3.8 GB RAM. Nx tasks can OOM / hit vitest worker timeouts whe
 ## Database & shared infra
 
 - Postgres runs in Docker Desktop on Windows at `localhost:5432` — container `patlix-postgres` (superuser `arkadion`/`arkadion`, volume `patlix_pgdata`). Start/stop via `docker compose` at the workspace root (also manages `patlix-speaches` on :8969).
-- Each project uses its own DB inside the shared Postgres: `patlix` (role `patlix`, `apps/api/.env`) and `arkadion` (`apps/arkadion-api/.env`).
+- Each project uses its own DB inside the shared Postgres: `patlix` (role `patlix`, `apps/api/.env`), `arkadion` (`apps/arkadion-api/.env`), `falina` (`apps/falina-api/.env`), `patlixworld` (`apps/patlix-world-api/.env`). `aurel-dashboard-api` is stateless (in-memory) — no DB.
 - Schema auto-syncs (`synchronize: true`) — dev only.
 
 ## graphify
@@ -67,8 +90,22 @@ This project has a knowledge graph at graphify-out/ with god nodes, community st
 When the user types `/graphify`, use the installed graphify skill or instructions before doing anything else.
 
 Rules:
+
 - For codebase questions, first run `graphify query "<question>"` when graphify-out/graph.json exists. Use `graphify path "<A>" "<B>"` for relationships and `graphify explain "<concept>"` for focused concepts. These return a scoped subgraph, usually much smaller than GRAPH_REPORT.md or raw grep output.
 - Dirty graphify-out/ files are expected after hooks or incremental updates; dirty graph files are not a reason to skip graphify. Only skip graphify if the task is about stale or incorrect graph output, or the user explicitly says not to use it.
 - If graphify-out/wiki/index.md exists, use it for broad navigation instead of raw source browsing.
 - Read graphify-out/GRAPH_REPORT.md only for broad architecture review or when query/path/explain do not surface enough context.
 - After modifying code, run `graphify update .` to keep the graph current (AST-only, no API cost).
+
+## Agent coordination (shared workspace)
+
+This repo is shared by openclaw (Aurel, orchestrator) and opencode (executor). Rules:
+
+- **Lock before editing:** `agent-lock acquire . <owner>` before a multi-edit session;
+  `agent-lock release . <owner>` when done. Check `agent-lock status .` first. One heavy
+  writer at a time — never edit while another agent holds the lock.
+- **Ledger:** tasks/plans go into the durable ledger `atask` (`atask list` shows what's
+  running/queued). Create one via `atask new`; update status as you work.
+- **Gate:** never claim done without `nx-verify <project>` (lint+test+build, `--parallel=1`).
+  This box has ~3.8GB RAM — never run parallel heavy Nx tasks; serve one app at a time.
+- **Design workflow:** use the `designer` agent for UX-image → UI work; never guess hexes.
