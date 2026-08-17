@@ -17,6 +17,9 @@
     },
     {
       "path": "./libs/falina-shared"
+    },
+    {
+      "path": "./libs/patlix-people-shared"
     }
   ],
   "compilerOptions": {}
