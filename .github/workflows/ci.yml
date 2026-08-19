@@ -66,6 +66,7 @@ jobs:
         run: |
           docker exec -i ${{ job.services.postgres.id }} psql -U arkadion -d postgres -c "CREATE ROLE falina LOGIN PASSWORD 'falina';" -c "CREATE DATABASE falina OWNER falina;"
           docker exec -i ${{ job.services.postgres.id }} psql -U arkadion -d postgres -c "CREATE ROLE patlixworld LOGIN PASSWORD 'patlixworld';" -c "CREATE DATABASE patlixworld OWNER patlixworld;"
+          docker exec -i ${{ job.services.postgres.id }} psql -U arkadion -d postgres -c "CREATE ROLE arkadion LOGIN PASSWORD 'arkadion';" -c "CREATE DATABASE arkadion OWNER arkadion;"
 
       - run: npx nx format:check --base="remotes/origin/main"
       - run: npx nx run-many -t lint test build typecheck e2e --parallel=1
