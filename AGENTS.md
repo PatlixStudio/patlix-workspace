@@ -66,9 +66,10 @@ Every project owns a **dedicated port pair** — API on `30xx`, web on `42xx` (w
 | aurel-dashboard                    | 3003 | 4203 |
 | patlix-world                       | 3004 | 4204 |
 | patlix-people                      | 3005 | 4205 |
-| _next free_                        | 3006 | 4206 |
+| ai-love                            | 3006 | 4206 |
+| _next free_                        | 3007 | 4207 |
 
-- **New project → next free pair:** API `3006`, web `4206` (increment until unused). Then update this table, the `Common commands` section below, the app README, and any proxy/env files.
+- **New project → next free pair:** API `3007`, web `4207` (increment until unused). Then update this table, the `Common commands` section below, the app README, and any proxy/env files.
 - **API port** = `process.env.PORT ?? <api>` in `src/main.ts`; **web port** = `"port"` in the Nx serve config (`project.json` / `angular.json`); web proxy target must equal the API port.
 - Reserved infra (do not reassign): Postgres `5432`, Redis `6379`, patlix-speaches `8969`.
 
@@ -86,6 +87,8 @@ Every project owns a **dedicated port pair** — API on `30xx`, web on `42xx` (w
 - `npx nx serve patlix-world-web` → :4204 (needs its own deps: `npm install --prefix apps/patlix-world-web`)
 - `npx nx serve patlix-people-api` → :3005 (needs its own deps: `npm install --prefix apps/patlix-people-api`), Swagger at `/api/docs`
 - `npx nx serve patlix-people-web` → :4205 (needs its own deps: `npm install --prefix apps/patlix-people-web`)
+- `npx nx serve ai-love-api` → :3006, Swagger at `/api/docs`
+- `npx nx serve ai-love-web` → :4206 (proxies `/api` → :3006)
 - `npx nx lint|test|build <project>` for a single project
 - `npx nx run-many -t lint test build --parallel=1` for all quality gates
 - `npx nx g @nx/angular:app <name> --directory=apps/<name> --style=scss --routing --unitTestRunner=vitest-angular`

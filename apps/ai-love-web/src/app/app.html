@@ -1,0 +1,21 @@
+@if (!hideNav) {
+  <header class="shell">
+    <a class="brand" routerLink="/companions">
+      <span class="material-symbols-outlined brand-icon">favorite</span>
+      <span class="brand-name">ai-love</span>
+    </a>
+
+    <nav class="nav">
+      <a routerLink="/companions" routerLinkActive="active" class="nav-link">
+        <span class="material-symbols-outlined">people</span>
+        Companions
+      </a>
+    </nav>
+
+    @if (nsfwOptedIn()) {
+      <span class="nsfw-flag">explicit on</span>
+    }
+  </header>
+}
+
+<router-outlet />

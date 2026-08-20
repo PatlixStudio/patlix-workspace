@@ -1,0 +1,63 @@
+@if (companion; as companion) {
+  <div class="page">
+    <a mat-button class="back" routerLink="/companions">
+      <mat-icon>arrow_back</mat-icon> All companions
+    </a>
+
+    <mat-card class="profile">
+      <div class="profile-top">
+        <div class="profile-avatar" [attr.data-tone]="companion.avatarTone">
+          <span class="material-symbols-outlined avatar-icon">{{ companion.avatarIcon }}</span>
+        </div>
+
+        <div class="profile-head">
+          <h1 class="profile-name">{{ companion.name }}</h1>
+          <p class="profile-meta">
+            {{ companion.age }} years old · {{ companion.gender === 'female' ? 'She' : 'He' }} ·
+            voice: {{ companion.tone }}
+          </p>
+          <p class="profile-tagline">{{ companion.tagline }}</p>
+          @if (companion.nsfw) {
+            <span class="nsfw-badge">mature content</span>
+          }
+        </div>
+      </div>
+
+      <mat-card-content class="profile-body">
+        <h2 class="profile-section">About {{ companion.name }}</h2>
+        <p class="profile-persona">{{ companion.persona }}</p>
+
+        <h2 class="profile-section">Personality</h2>
+        <mat-chip-set>
+          @for (tag of companion.personalityTags; track tag) {
+            <mat-chip>{{ tag }}</mat-chip>
+          }
+        </mat-chip-set>
+
+        <h2 class="profile-section">Interests</h2>
+        <ul class="profile-interests">
+          @for (interest of companion.interests; track interest) {
+            <li>
+              <mat-icon>favorite</mat-icon>
+              <span>{{ interest }}</span>
+            </li>
+          }
+        </ul>
+
+        <button mat-flat-button color="primary" class="profile-cta" disabled>
+          <mat-icon>chat_bubble</mat-icon> Start a conversation
+        </button>
+        <p class="profile-note">Chat comes in the next update.</p>
+      </mat-card-content>
+    </mat-card>
+  </div>
+} @else if (notFound) {
+  <div class="not-found">
+    <h2>Companion not found</h2>
+    <a mat-flat-button color="primary" routerLink="/companions">Back to all companions</a>
+  </div>
+} @else {
+  <div class="loading">
+    <mat-progress-spinner mode="indeterminate" diameter="40" />
+  </div>
+}

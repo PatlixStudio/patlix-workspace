@@ -1,0 +1,78 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.shell {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 12px 28px;
+  background: color-mix(in srgb, var(--al-bg) 82%, transparent);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--al-border);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--al-brand-font);
+  font-size: 22px;
+  font-weight: 700;
+}
+
+.brand-icon {
+  color: var(--mat-sys-primary);
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
+}
+
+.nav {
+  display: flex;
+  gap: 4px;
+  flex: 1;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  color: var(--al-text-muted);
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+
+  span {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &:hover {
+    color: var(--al-text);
+    background: var(--al-surface-2);
+  }
+
+  &.active {
+    color: var(--mat-sys-primary);
+    background: color-mix(in srgb, var(--mat-sys-primary) 14%, transparent);
+  }
+}
+
+.nsfw-flag {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--mat-sys-error);
+  border: 1px solid color-mix(in srgb, var(--mat-sys-error) 45%, transparent);
+  border-radius: 999px;
+  padding: 3px 10px;
+}

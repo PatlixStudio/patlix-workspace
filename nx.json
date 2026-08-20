@@ -67,7 +67,8 @@
       "plugin": "@nx/jest/plugin",
       "options": {
         "targetName": "test"
-      }
+      },
+      "exclude": ["apps/ai-love-api-e2e/**/*"]
     }
   ],
   "targetDefaults": {

@@ -1,0 +1,38 @@
+<div class="page">
+  <header class="page-head">
+    <h1 class="page-title">Meet your companions</h1>
+    <p class="page-sub">Fourteen personalities, each ready to get to know you.</p>
+  </header>
+
+  <div class="filters">
+    <mat-button-toggle-group
+      (change)="gender = $event.value; applyFilters()"
+      aria-label="Filter by gender"
+      class="filters-gender"
+    >
+      <mat-button-toggle [value]="undefined">All</mat-button-toggle>
+      <mat-button-toggle [value]="CompanionGender.Female">She</mat-button-toggle>
+      <mat-button-toggle [value]="CompanionGender.Male">He</mat-button-toggle>
+    </mat-button-toggle-group>
+
+    <mat-chip-set class="filters-tags" aria-label="Filter by personality tag">
+      @for (t of tags; track t) {
+        <mat-chip [class.active]="t === selectedTag" (click)="toggleTag(t)">
+          {{ t }}
+        </mat-chip>
+      }
+    </mat-chip-set>
+  </div>
+
+  <div class="grid">
+    @if (companions$ | async; as companions) {
+      @for (companion of companions; track companion.id) {
+        <app-companion-card [companion]="companion" />
+      }
+    } @else {
+      <div class="loading">
+        <mat-progress-spinner mode="indeterminate" diameter="36" />
+      </div>
+    }
+  </div>
+</div>

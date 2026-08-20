@@ -38,6 +38,8 @@ Conventions applied to **every** project:
 | `patlix-people-web`   | `apps/patlix-people-web`   | Patlix People — social platform UI (Angular + Ionic + Capacitor, custom design system).                      | 4205 |
 | `patlix-people-api`   | `apps/patlix-people-api`   | Patlix People backend: auth, profiles, likes, boost (NestJS, standalone repo).                               | 3005 |
 | `patlix-people-shared`| `libs/patlix-people-shared`| Patlix People shared contracts (`@patlix-people/shared`).                                                    | —    |
+| `ai-love-web`         | `apps/ai-love-web`         | ai-love — AI Companion catalog UI (Angular Material M3, rose/plum custom theme, Google Icons, 18+ gate).     | 4206 |
+| `ai-love-api`         | `apps/ai-love-api`         | ai-love backend: companion catalog REST + Swagger at `/api/docs` (NestJS, workspace-managed).               | 3006 |
 
 > Naming rule: Patlix's own apps keep the short names `patlix-web` / `patlix-api`. Feature projects carried into the workspace keep `<name>-web` / `<name>-api` (e.g. `arkadion-web` / `arkadion-api`).
 

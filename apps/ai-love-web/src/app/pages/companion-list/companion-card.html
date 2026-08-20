@@ -1,0 +1,20 @@
+<mat-card class="card" [routerLink]="['/companions', companion().id]">
+  <div class="card-avatar" [attr.data-tone]="avatarTone(companion().avatarTone)">
+    <span class="material-symbols-outlined avatar-icon">{{ companion().avatarIcon }}</span>
+  </div>
+
+  <mat-card-title class="card-name">{{ companion().name }}</mat-card-title>
+  <mat-card-subtitle class="card-meta">
+    {{ companion().age }} · {{ companion().gender === 'female' ? 'She' : 'He' }} · {{ companion().tagline }}
+  </mat-card-subtitle>
+
+  <mat-card-content class="card-tags">
+    @for (tag of companion().personalityTags; track tag) {
+      <mat-chip>{{ tag }}</mat-chip>
+    }
+  </mat-card-content>
+
+  @if (companion().nsfw) {
+    <span class="nsfw-badge">mature</span>
+  }
+</mat-card>

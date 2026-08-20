@@ -1,0 +1,65 @@
+@use '@angular/material' as mat;
+@use './theme/palettes' as al;
+
+$al-typography: (
+  plain-family: 'Inter',
+  brand-family: 'Playfair Display',
+);
+$al-density: 0;
+
+// ============================================================
+// ai-love dark theme (default)
+//   deep plum-charcoal surfaces, rose primary, romantic serif brand type
+// ============================================================
+html {
+  color-scheme: dark;
+
+  @include mat.theme(
+    (
+      color: (
+        theme-type: dark,
+        primary: al.$rose-palette,
+        tertiary: al.$plum-palette,
+      ),
+      typography: $al-typography,
+      density: $al-density,
+    )
+  );
+}
+
+// Design tokens
+html {
+  --al-bg: #14090f;
+  --al-bg-grad: radial-gradient(
+    1200px 800px at 80% -10%,
+    rgba(244, 63, 107, 0.14),
+    transparent 60%
+  );
+  --al-surface: #1f111a;
+  --al-surface-2: #271622;
+  --al-card: #24121c;
+  --al-border: rgba(244, 63, 107, 0.18);
+  --al-text: #ffeef3;
+  --al-text-muted: rgba(255, 238, 243, 0.62);
+  --al-brand-font: 'Playfair Display', serif;
+  --al-body-font: 'Inter', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  background: var(--al-bg);
+  background-image: var(--al-bg-grad);
+  color: var(--al-text);
+  font-family: var(--al-body-font);
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}

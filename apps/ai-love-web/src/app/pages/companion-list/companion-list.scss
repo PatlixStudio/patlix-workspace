@@ -1,0 +1,52 @@
+.page {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 40px 24px 72px;
+}
+
+.page-head {
+  margin-bottom: 28px;
+
+  .page-title {
+    font-family: var(--al-brand-font);
+    font-size: 34px;
+    margin: 0 0 6px;
+  }
+
+  .page-sub {
+    color: var(--al-text-muted);
+    margin: 0;
+  }
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.filters-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+
+  .active {
+    background: color-mix(in srgb, var(--mat-sys-primary) 24%, transparent);
+    border-color: var(--mat-sys-primary);
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 18px;
+}
+
+.loading {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: center;
+  padding: 60px 0;
+}

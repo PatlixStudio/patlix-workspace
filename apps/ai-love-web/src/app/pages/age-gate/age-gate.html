@@ -1,0 +1,27 @@
+<div class="gate">
+  <div class="gate-card">
+    <span class="gate-logo material-symbols-outlined">favorite</span>
+    <h1 class="gate-title">ai-love</h1>
+    <p class="gate-subtitle">AI companions crafted for conversation, company, and connection.</p>
+
+    <div class="gate-age">
+      <span class="gate-age-badge">18+</span>
+      <p>This experience contains mature themes. You must be at least 18 years old to enter.</p>
+    </div>
+
+    <mat-checkbox
+      [(ngModel)]="nsfwOptIn"
+      color="primary"
+      class="gate-optin"
+      aria-label="Opt in to explicit content"
+    >
+      I want to opt in to explicit content (optional)
+    </mat-checkbox>
+
+    <button mat-flat-button color="primary" class="gate-cta" (click)="confirmAge()">
+      I am 18 or older — enter
+    </button>
+
+    <p class="gate-note">By entering you confirm you are of legal age in your country.</p>
+  </div>
+</div>

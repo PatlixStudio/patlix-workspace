@@ -1,0 +1,67 @@
+@use 'sass:map';
+
+// Brand rose — anchor tone 40 = #F43F6B (warm romantic pink) for ai-love.
+$_rose: (
+  0: #000000,
+  10: #3a0019,
+  20: #5c0030,
+  25: #6e003b,
+  30: #810046,
+  35: #950051,
+  40: #f43f6b,
+  50: #ff5f81,
+  60: #ff8099,
+  70: #ff9db0,
+  80: #ffb1c0,
+  90: #ffd9de,
+  95: #ffecf0,
+  98: #fff8f8,
+  99: #fffbff,
+  100: #ffffff,
+);
+
+// Brand plum — deep violet-rose accent for surfaces and secondary highlights.
+$_plum: (
+  0: #000000,
+  10: #2b0a2e,
+  20: #432147,
+  25: #4f2c53,
+  30: #5b375f,
+  35: #68426b,
+  40: #744e77,
+  50: #8e6790,
+  60: #a980ab,
+  70: #c59ac6,
+  80: #e2b5e2,
+  90: #ffd7f8,
+  95: #ffebfb,
+  98: #fff7fb,
+  99: #fffbff,
+  100: #ffffff,
+);
+
+/// Exposed rose palette for `mat.theme(color: (primary: ...))`.
+$rose-palette: map.set($_rose, 'palette', $_rose);
+
+/// Exposed plum palette for `mat.theme(color: (tertiary: ...))`.
+$plum-palette: map.set($_plum, 'palette', $_plum);
+
+/// Warm neutral palette used for surfaces/backgrounds.
+$neutral-palette: (
+  0: #000000,
+  10: #1c1b1b,
+  20: #313030,
+  25: #3d3b3b,
+  30: #494647,
+  35: #555252,
+  40: #615d5e,
+  50: #7a7676,
+  60: #948f90,
+  70: #afaaaa,
+  80: #cbc5c5,
+  90: #e7e1e1,
+  95: #f6efef,
+  98: #fff8f8,
+  99: #fffbff,
+  100: #ffffff,
+);
