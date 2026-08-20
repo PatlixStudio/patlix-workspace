@@ -26,6 +26,7 @@
 
 Stack and rules for this workspace:
 
+- **MANDATORY component separation (all Angular projects, every agent)**: HTML template must live in a `.html` file, styling in `.scss`, business/component logic in `.ts`. NEVER mix template or styles inline in the `.ts` file — use `templateUrl`/`styleUrl` and keep the three concepts in separate files. This is non-negotiable; we use Angular for concept separation.
 - **Frontend** = Angular (standalone) + Angular Material **M3** + SCSS. Use `@nx/angular:app` generators.
 - **Backend** = NestJS + **TypeORM** + **PostgreSQL**. Use `@nx/nest:app` generators.
 - **Shared code** = `libs/shared` (`@patlix/shared`) for DTOs/types consumed by both apps. Keep it framework-agnostic (plain types/enums only).
