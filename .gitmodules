@@ -46,3 +46,9 @@
 [submodule "libs/patlix-people-shared"]
 	path = libs/patlix-people-shared
 	url = git@github.com:PatlixStudio/patlix-people-shared.git
+[submodule "apps/aurel-core"]
+	path = apps/aurel-core
+	url = ./apps/aurel-core
+[submodule "libs/aurel-core-contracts"]
+	path = libs/aurel-core-contracts
+	url = ./libs/aurel-core-contracts
