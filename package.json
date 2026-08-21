@@ -29,6 +29,8 @@
     "@swc/helpers": "~0.5.18",
     "@types/jest": "~30.0.0",
     "@types/node": "24.13.3",
+    "@types/bcryptjs": "^2.4.6",
+    "@grpc/grpc-js": "^1.14.4",
     "@typescript-eslint/utils": "^8.58.0",
     "@vitest/coverage-v8": "~4.1.10",
     "@vitest/ui": "~4.1.10",
