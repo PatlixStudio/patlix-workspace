@@ -55,6 +55,9 @@ body {
   margin: 0;
   background: var(--al-bg);
   background-image: var(--al-bg-grad);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-attachment: fixed;
   color: var(--al-text);
   font-family: var(--al-body-font);
 }

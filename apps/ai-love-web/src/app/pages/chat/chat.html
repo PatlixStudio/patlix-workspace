@@ -1,0 +1,119 @@
+<div class="chat-container">
+  <!-- Header -->
+  <header class="chat-header">
+    <button mat-icon-button class="back-btn" (click)="goBack()" matTooltip="Back to companions">
+      <mat-icon>arrow_back</mat-icon>
+    </button>
+    
+    @if (companion(); as c) {
+      <div class="companion-info">
+        <img [src]="avatarUrl()" [alt]="c.name" class="avatar" (error)="onImageError($event)">
+        <div class="companion-details">
+          <h2>{{ c.name }}, {{ c.age }}</h2>
+          <p class="tagline">{{ c.tagline }}</p>
+        </div>
+      </div>
+    }
+
+    <div class="header-actions">
+      <button mat-icon-button (click)="clearChat()" matTooltip="Clear chat history" [disabled]="messages().length === 0">
+        <mat-icon>delete_outline</mat-icon>
+      </button>
+    </div>
+  </header>
+
+  <!-- Messages Area -->
+  <main class="messages-area" #messagesContainer>
+    <div class="messages-wrapper">
+      @if (messages().length === 0) {
+        <div class="welcome-message">
+          <div class="welcome-avatar">
+            <img [src]="avatarUrl()" [alt]="companion()?.name" (error)="onImageError($event)">
+          </div>
+          <h3>Start a conversation</h3>
+          <p>{{ companion()?.name }} is ready to chat. Say hello!</p>
+          @if ((companion()?.personalityTags?.length ?? 0) > 0) {
+            <div class="personality-chips">
+              @for (tag of companion()!.personalityTags; track tag) {
+                <mat-chip>{{ tag }}</mat-chip>
+              }
+            </div>
+          }
+        </div>
+      } @else {
+        @for (msg of messages(); track msg.id) {
+          <div class="message" [class.user]="msg.role === 'user'" [class.assistant]="msg.role === 'assistant'">
+            @if (msg.role === 'assistant') {
+              <div class="message-avatar">
+                <img [src]="avatarUrl()" [alt]="companion()?.name" (error)="onImageError($event)">
+              </div>
+            }
+            <div class="message-content">
+              <div class="message-bubble">
+                <p class="message-text">{{ msg.content }}</p>
+                <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
+              </div>
+            </div>
+            @if (msg.role === 'user') {
+              <div class="message-avatar user-avatar">
+                <mat-icon>person</mat-icon>
+              </div>
+            }
+          </div>
+        }
+      }
+
+      @if (isTyping()) {
+        <div class="typing-indicator">
+          <div class="typing-avatar">
+            <img [src]="avatarUrl()" [alt]="companion()?.name" (error)="onImageError($event)">
+          </div>
+          <div class="typing-bubble">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+      }
+    </div>
+  </main>
+
+  <!-- Error Banner -->
+  @if (error()) {
+    <div class="error-banner" role="alert">
+      <mat-icon>error_outline</mat-icon>
+      <span>{{ error() }}</span>
+      <button mat-icon-button (click)="error.set(null)" aria-label="Dismiss error">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+
+  <!-- Input Area -->
+  <footer class="input-area">
+    <mat-form-field appearance="outline" class="message-input-field">
+      <mat-label>Message {{ companion()?.name }}</mat-label>
+      <textarea 
+        matInput 
+        #messageInput
+        [(ngModel)]="newMessage" 
+        (keydown)="onKeyDown($event)"
+        rows="1"
+        placeholder="Type your message..."
+        [disabled]="isLoading()">
+      </textarea>
+      <button 
+        mat-icon-button 
+        matSuffix 
+        (click)="sendMessage()" 
+        [disabled]="!newMessage.trim() || isLoading()"
+        matTooltip="Send message">
+        @if (!isLoading()) {
+          <mat-icon>send</mat-icon>
+        } @else {
+          <mat-spinner diameter="20"></mat-spinner>
+        }
+      </button>
+    </mat-form-field>
+  </footer>
+</div>

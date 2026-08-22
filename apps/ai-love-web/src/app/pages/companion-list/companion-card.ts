@@ -26,4 +26,13 @@ export class CompanionCardComponent {
   readonly companion = input.required<Companion>();
 
   protected readonly avatarTone = (tone: string): string => tone;
+
+  protected avatarUrl(c: Companion): string {
+    return `/assets/companions/${c.id}/profile/${c.id}-profile.png`;
+  }
+
+  protected onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    img.src = '/assets/placeholder-avatar.png';
+  }
 }

@@ -7,7 +7,7 @@
     <mat-card class="profile">
       <div class="profile-top">
         <div class="profile-avatar" [attr.data-tone]="companion.avatarTone">
-          <span class="material-symbols-outlined avatar-icon">{{ companion.avatarIcon }}</span>
+          <img [src]="avatarUrl(companion)" [alt]="companion.name" class="avatar-img" (error)="onImageError($event)">
         </div>
 
         <div class="profile-head">
@@ -44,10 +44,9 @@
           }
         </ul>
 
-        <button mat-flat-button color="primary" class="profile-cta" disabled>
+        <button mat-flat-button color="primary" class="profile-cta" [routerLink]="['/companions', companion.id, 'chat']">
           <mat-icon>chat_bubble</mat-icon> Start a conversation
         </button>
-        <p class="profile-note">Chat comes in the next update.</p>
       </mat-card-content>
     </mat-card>
   </div>
@@ -59,5 +58,6 @@
 } @else {
   <div class="loading">
     <mat-progress-spinner mode="indeterminate" diameter="40" />
+    <p>Loading...</p>
   </div>
 }

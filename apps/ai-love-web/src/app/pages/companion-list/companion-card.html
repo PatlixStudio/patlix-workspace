@@ -1,6 +1,6 @@
 <mat-card class="card" [routerLink]="['/companions', companion().id]">
   <div class="card-avatar" [attr.data-tone]="avatarTone(companion().avatarTone)">
-    <span class="material-symbols-outlined avatar-icon">{{ companion().avatarIcon }}</span>
+    <img [src]="avatarUrl(companion())" [alt]="companion().name" class="avatar-img" (error)="onImageError($event)">
   </div>
 
   <mat-card-title class="card-name">{{ companion().name }}</mat-card-title>
