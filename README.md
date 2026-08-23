@@ -40,6 +40,8 @@ Conventions applied to **every** project:
 | `patlix-people-shared`| `libs/patlix-people-shared`| Patlix People shared contracts (`@patlix-people/shared`).                                                    | —    |
 | `ai-love-web`         | `apps/ai-love-web`         | ai-love — AI Companion catalog UI (Angular Material M3, rose/plum custom theme, Google Icons, 18+ gate).     | 4206 |
 | `ai-love-api`         | `apps/ai-love-api`         | ai-love backend: companion catalog REST + Swagger at `/api/docs` (NestJS, workspace-managed).               | 3006 |
+| `aurel-core`          | `apps/aurel-core`          | Aurel Core — native gRPC server, .NET runtime, Avalonia desktop UI, plugin system.                           | 50051 (gRPC) |
+| `aurel-core-contracts`| `libs/aurel-core-contracts`| Shared gRPC protobuf contracts (C#/TypeScript).                                                              | — |
 
 > Naming rule: Patlix's own apps keep the short names `patlix-web` / `patlix-api`. Feature projects carried into the workspace keep `<name>-web` / `<name>-api` (e.g. `arkadion-web` / `arkadion-api`).
 
@@ -66,6 +68,10 @@ npm install --prefix apps/falina-api
 npm install --prefix apps/falina-web
 npx nx serve falina-api
 npx nx serve falina-web
+
+# Start Aurel Core (gRPC on :50051, desktop UI)
+dotnet run --project apps/aurel-core/src/Aurel.Core &
+dotnet run --project apps/aurel-core/src/Aurel.Desktop
 
 # Start Aurel Dashboard (API on :3003, docs at /api/docs, web on :4203)
 npm install --prefix apps/aurel-dashboard-api
@@ -159,15 +165,19 @@ npx nx g @nx/js:lib <name> --directory=libs/<name> --importPath=@patlix/<name>
   - `PatlixStudio/patlix-world-web` → `apps/patlix-world-web`
   - `PatlixStudio/patlix-world-api` → `apps/patlix-world-api`
   - `PatlixStudio/patlix-world-shared` → `libs/patlix-world-shared`
-  - `PatlixStudio/patlix-people-web` → `apps/patlix-people-web`
-  - `PatlixStudio/patlix-people-api` → `apps/patlix-people-api`
-  - `PatlixStudio/patlix-people-shared` → `libs/patlix-people-shared`
+- `PatlixStudio/patlix-people-web` → `apps/patlix-people-web`
+- `PatlixStudio/patlix-people-api` → `apps/patlix-people-api`
+- `PatlixStudio/patlix-people-shared` → `libs/patlix-people-shared`
+- `PatlixStudio/aurel-core` → `apps/aurel-core`
+- `PatlixStudio/aurel-core-contracts` → `libs/aurel-core-contracts`
 
 ```bash
 git submodule update --init --recursive
 ```
 
 > Arkadion was previously a standalone workspace (its old `arkadion` wrapper repo is archived on GitHub). `apps/arkadion-web` and `apps/arkadion-api` are the working locations now.
+
+> Aurel Core is a .NET project outside the Nx workspace structure (uses `dotnet` CLI, not `nx`). It provides gRPC services on port 50051 and an Avalonia desktop UI. It also has a shared contracts library at `libs/aurel-core-contracts`.
 
 > Development happens inside each project's repo; the workspace repo tracks the submodule commits.
 
