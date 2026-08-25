@@ -112,8 +112,7 @@
 
   <!-- Input Area -->
   <footer class="input-area">
-    <mat-form-field appearance="outline" class="message-input-field">
-      <mat-label>Message {{ companion()?.name }}</mat-label>
+    <mat-form-field appearance="fill" class="message-input-field" subscriptSizing="dynamic">
       <textarea 
         matInput 
         #messageInput

@@ -343,19 +343,18 @@
   ::ng-deep .mat-mdc-text-field-wrapper {
     border-radius: 28px;
     background: var(--al-surface-2);
+    border: none;
     box-shadow: 0 4px 20px rgba(244, 63, 107, 0.08);
     transition: box-shadow 0.2s ease;
   }
 
   &.mat-focused ::ng-deep .mat-mdc-text-field-wrapper {
+    background: var(--al-surface-2);
     box-shadow: 0 4px 28px rgba(244, 63, 107, 0.18);
   }
 
-  ::ng-deep .mdc-notched-outline__notch {
-    display: none;
-  }
-
-  ::ng-deep .mat-mdc-form-field-subscript-wrapper {
+  ::ng-deep .mdc-notched-outline,
+  ::ng-deep .mdc-line-ripple {
     display: none;
   }
 }

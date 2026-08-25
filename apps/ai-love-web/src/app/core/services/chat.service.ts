@@ -66,7 +66,7 @@ export class ChatService {
    */
   async speak(companionId: string, text: string): Promise<string> {
     const blob = await firstValueFrom(
-      this.http.post(`${this.apiUrl}/chat/${companionId}/speak`, { text }, { responseType: 'blob' }),
+      this.http.post(`${this.apiUrl}/${companionId}/speak`, { text }, { responseType: 'blob' }),
     );
     return URL.createObjectURL(blob);
   }
