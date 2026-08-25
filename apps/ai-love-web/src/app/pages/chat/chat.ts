@@ -154,10 +154,11 @@ export class ChatComponent implements OnInit, OnDestroy {
       timestamp: new Date(),
     };
     this.messages.update((msgs) => [...msgs, userMessage]);
-    this.scrollToBottom();
 
     try {
+      // Show the typing indicator immediately, then scroll past the new message.
       this.isTyping.set(true);
+      this.scrollToBottom();
       const response = await this.chatService.sendMessage(companion.id, text, this.messages());
       
       const assistantMessage: ChatMessage = {
