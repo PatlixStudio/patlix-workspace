@@ -122,17 +122,13 @@
         placeholder="Type your message..."
         [disabled]="isLoading()">
       </textarea>
-      <button 
-        mat-icon-button 
-        matSuffix 
-        (click)="sendMessage()" 
+      <button
+        mat-icon-button
+        matSuffix
+        (click)="sendMessage()"
         [disabled]="!newMessage.trim() || isLoading()"
         matTooltip="Send message">
-        @if (!isLoading()) {
-          <mat-icon>send</mat-icon>
-        } @else {
-          <mat-spinner diameter="20"></mat-spinner>
-        }
+        <mat-icon>send</mat-icon>
       </button>
     </mat-form-field>
   </footer>
