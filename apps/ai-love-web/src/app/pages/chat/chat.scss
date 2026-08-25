@@ -305,6 +305,38 @@
   30% { transform: translateY(-6px); opacity: 1; }
 }
 
+.nudge-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 16px 10px 20px;
+  border-top: 1px solid var(--mat-sys-outline-variant);
+  flex-shrink: 0;
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  span {
+    flex: 1;
+    font-size: 0.9rem;
+    line-height: 1.4;
+  }
+}
+
+.login-nudge {
+  background: color-mix(in srgb, var(--mat-sys-primary-container) 55%, var(--mat-sys-surface-container) 45%);
+  color: var(--mat-sys-on-primary-container);
+}
+
+.premium-nudge {
+  background: color-mix(in srgb, var(--mat-sys-tertiary-container) 60%, var(--mat-sys-surface-container) 40%);
+  color: var(--mat-sys-on-tertiary-container);
+}
+
 .error-banner {
   display: flex;
   align-items: center;

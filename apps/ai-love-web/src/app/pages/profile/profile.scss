@@ -119,6 +119,31 @@
   }
 }
 
+.explicit-card {
+  margin-bottom: 16px;
+
+  .explicit-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .explicit-info {
+    h3 {
+      font-size: 16px;
+      margin: 0 0 4px;
+    }
+
+    p {
+      color: var(--al-text-muted);
+      font-size: 13px;
+      margin: 0;
+      line-height: 1.5;
+    }
+  }
+}
+
 .upgrade-card {
   background: linear-gradient(
     135deg,

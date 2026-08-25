@@ -1,6 +1,7 @@
 import { Controller, Post, Get, Delete, Body, Param, HttpCode, HttpStatus, Req, Header, NotFoundException, BadGatewayException, StreamableFile } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { Request } from 'express';
+import { AuthService } from '../auth/auth.service';
 import { ChatService } from './chat.service';
 import { SendMessageDto, ChatResponseDto, ChatHistoryDto, SpeakDto } from './chat.dto';
 
@@ -12,10 +13,33 @@ interface AuthenticatedRequest extends Request {
 @ApiTags('chat')
 @Controller('chat')
 export class ChatController {
-  constructor(private readonly chatService: ChatService) {}
+  constructor(
+    private readonly chatService: ChatService,
+    private readonly authService: AuthService,
+  ) {}
+
+  private resolveAuth(req: AuthenticatedRequest): { userId: string; isSubscribed: boolean } {
+    const auth = req.headers.authorization;
+    if (auth?.startsWith('Bearer ')) {
+      const token = auth.slice(7);
+      const user = this.authService.validateToken(token);
+      if (user) return { userId: user.id, isSubscribed: user.isSubscribed };
+    }
+    if (req.user?.sub) {
+      const user = this.authService.getUser(req.user.sub);
+      if (user) return { userId: user.id, isSubscribed: user.isSubscribed };
+    }
+    const headerId = req.headers['x-user-id'];
+    if (typeof headerId === 'string' && headerId) {
+      const user = this.authService.getUser(headerId);
+      if (user) return { userId: user.id, isSubscribed: user.isSubscribed };
+      return { userId: headerId, isSubscribed: false };
+    }
+    return { userId: 'default', isSubscribed: false };
+  }
 
   private getUserId(req: AuthenticatedRequest): string {
-    return req.user?.sub || req.headers['x-user-id'] || 'default';
+    return this.resolveAuth(req).userId;
   }
 
   @Post(':companionId')
@@ -29,12 +53,13 @@ export class ChatController {
     @Body() dto: SendMessageDto,
     @Req() req: AuthenticatedRequest,
   ): Promise<ChatResponseDto> {
-    const userId = this.getUserId(req);
+    const { userId, isSubscribed } = this.resolveAuth(req);
     const response = await this.chatService.sendMessage({
       companionId,
       userMessage: dto.message,
       history: dto.history,
       userId,
+      isSubscribed,
       allowExplicit: dto.allowExplicit ?? false,
     });
     return { response };

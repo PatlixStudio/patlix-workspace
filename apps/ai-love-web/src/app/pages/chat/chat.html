@@ -99,6 +99,29 @@
     </div>
   </main>
 
+  <!-- Nudge Banners -->
+  @if (showLoginBanner()) {
+    <div class="nudge-banner login-nudge" role="status">
+      <mat-icon>favorite</mat-icon>
+      <span>To know you better, love — please log in so I can remember you.</span>
+      <button mat-flat-button color="primary" (click)="goLogin()">Log in</button>
+      <button mat-icon-button (click)="dismissLoginBanner()" aria-label="Dismiss">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+
+  @if (showPremiumBanner()) {
+    <div class="nudge-banner premium-nudge" role="status">
+      <mat-icon>diamond</mat-icon>
+      <span>That intimate side unlocks with premium — upgrade to see me how you want.</span>
+      <button mat-flat-button color="primary" (click)="goPremium()">Upgrade</button>
+      <button mat-icon-button (click)="dismissPremiumBanner()" aria-label="Dismiss">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+  }
+
   <!-- Error Banner -->
   @if (error()) {
     <div class="error-banner" role="alert">

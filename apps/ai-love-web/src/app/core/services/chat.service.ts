@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { firstValueFrom } from 'rxjs';
 import { ChatMessage } from '../models/chat';
 import { environment } from '../../../environments/environment';
+import { AuthService } from './auth.service';
 
 export type { ChatMessage };
 
@@ -13,6 +14,7 @@ export class ChatService {
   private readonly apiUrl = `${environment.apiUrl}/chat`;
   private currentCompanionId: string | null = null;
   private readonly http = inject(HttpClient);
+  private readonly auth = inject(AuthService);
 
   private getAllowExplicit(): boolean {
     try {
@@ -28,22 +30,28 @@ export class ChatService {
     history: ChatMessage[],
   ): Promise<string> {
     this.currentCompanionId = companionId;
-    
+
     const response = await firstValueFrom(
-      this.http.post<{ response: string }>(`${this.apiUrl}/${companionId}`, {
-        message,
-        history: history.map(m => ({ role: m.role, content: m.content })),
-        allowExplicit: this.getAllowExplicit(),
-      }),
+      this.http.post<{ response: string }>(
+        `${this.apiUrl}/${companionId}`,
+        {
+          message,
+          history: history.map((m) => ({ role: m.role, content: m.content })),
+          allowExplicit: this.getAllowExplicit(),
+        },
+        { headers: this.auth.getAuthHeaders() },
+      ),
     );
-    
+
     return response.response;
   }
 
   async getHistory(companionId: string): Promise<ChatMessage[]> {
     try {
       const response = await firstValueFrom(
-        this.http.get<{ messages: ChatMessage[] }>(`${this.apiUrl}/${companionId}/history`),
+        this.http.get<{ messages: ChatMessage[] }>(`${this.apiUrl}/${companionId}/history`, {
+          headers: this.auth.getAuthHeaders(),
+        }),
       );
       return response.messages.map((m: any) => ({
         ...m,
@@ -56,7 +64,9 @@ export class ChatService {
 
   async clearHistory(companionId: string): Promise<void> {
     await firstValueFrom(
-      this.http.delete(`${this.apiUrl}/${companionId}/history`),
+      this.http.delete(`${this.apiUrl}/${companionId}/history`, {
+        headers: this.auth.getAuthHeaders(),
+      }),
     );
   }
 
@@ -66,7 +76,10 @@ export class ChatService {
    */
   async speak(companionId: string, text: string): Promise<string> {
     const blob = await firstValueFrom(
-      this.http.post(`${this.apiUrl}/${companionId}/speak`, { text }, { responseType: 'blob' }),
+      this.http.post(`${this.apiUrl}/${companionId}/speak`, { text }, {
+        responseType: 'blob',
+        headers: this.auth.getAuthHeaders(),
+      }),
     );
     return URL.createObjectURL(blob);
   }
@@ -88,6 +101,13 @@ export class ChatService {
       localStorage.setItem(NSFW_OPTIN_KEY, allowed.toString());
     } catch {
       // ignore
+    }
+    try {
+      const date = new Date();
+      date.setFullYear(date.getFullYear() + 1);
+      document.cookie = `${NSFW_OPTIN_KEY}=${allowed}; expires=${date.toUTCString()}; path=/`;
+    } catch {
+      // ignore (SSR / no document)
     }
   }
 }

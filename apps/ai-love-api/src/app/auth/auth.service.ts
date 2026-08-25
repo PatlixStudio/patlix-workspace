@@ -4,7 +4,9 @@ import * as jwt from 'jsonwebtoken';
 
 /**
  * User entity stored in memory (no DB persistence).
- * Replace with TypeORM entity when DB is configured.
+ * TODO(DB): Replace Map with TypeORM UserEntity (see docs/NEXT_MILESTONE.md).
+ * Keep the UsersStore helpers (getUser/getUserByEmail/validateToken) as the
+ * seam — migration should only swap this file.
  */
 export interface User {
   id: string;

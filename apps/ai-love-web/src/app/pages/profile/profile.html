@@ -44,13 +44,28 @@
       </mat-card-content>
     </mat-card>
 
+    <mat-card class="explicit-card">
+      <mat-card-content class="explicit-row">
+        <div class="explicit-info">
+          <h3>Explicit content</h3>
+          <p>Unlock intimate scenes with every companion — premium only.</p>
+        </div>
+        <mat-slide-toggle
+          [checked]="explicitOn"
+          [disabled]="!auth.isPremium()"
+          [matTooltip]="auth.isPremium() ? 'Toggle explicit scenes' : 'Premium only — upgrade to unlock'"
+          (change)="toggleExplicit($event)"
+        ></mat-slide-toggle>
+      </mat-card-content>
+    </mat-card>
+
     @if (!u.isSubscribed) {
       <mat-card class="upgrade-card">
         <mat-card-content>
           <h3>Upgrade to Premium</h3>
           <p>
-            Get unlimited messages, access to NSFW companions,
-            priority support, and voice chat.
+            Get unlimited messages, explicit scenes with every companion,
+            priority support, and voice chat. Nothing this good is free.
           </p>
           <button
             mat-flat-button

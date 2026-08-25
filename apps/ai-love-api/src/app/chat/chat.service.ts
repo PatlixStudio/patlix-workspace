@@ -15,8 +15,19 @@ export interface SendMessageOptions {
   userMessage: string;
   history: ChatMessage[];
   userId?: string;
+  /** Whether the authenticated user is premium (isSubscribed). */
+  isSubscribed?: boolean;
   allowExplicit?: boolean;
 }
+
+const LOGIN_NUDGE_THRESHOLD = 3;
+
+const EXPLICIT_KEYWORDS = [
+  'nsfw', 'explicit', 'sexual', 'sex', 'nude', 'naked', 'horny',
+  'kiss', 'kissing', 'touch', 'intimate', 'erotic', 'porn', 'sexy',
+  'boobs', 'breast', 'ass', 'pussy', 'dick', 'cock', 'orgasm',
+  'seduce', 'seduction', 'bedroom', 'undress',
+];
 
 @Injectable()
 export class ChatService {
@@ -44,15 +55,42 @@ export class ChatService {
   }
 
   async sendMessage(options: SendMessageOptions): Promise<string> {
-    const { companionId, userMessage, userId = 'default', allowExplicit = false } = options;
-    
-    const companion = COMPANIONS.find(c => c.id === companionId);
+    const { companionId, userMessage, userId = 'default', isSubscribed = false, allowExplicit = false } = options;
+
+    const companion = COMPANIONS.find((c) => c.id === companionId);
     if (!companion) {
       throw new Error(`Companion ${companionId} not found`);
     }
 
-    if (companion.nsfw && !allowExplicit) {
-      return this.getContentFilteredResponse(companion);
+    const isGuest = userId === 'default';
+    const isPremium = isSubscribed;
+
+    const key = this.getHistoryKey(companionId, userId);
+    const fullHistory = this.chatHistories.get(key) || [];
+    const userTurnCount = fullHistory.filter((m) => m.role === 'user').length;
+
+    // 1. Explicit intent → premium upsell (server is authoritative, no LLM call).
+    if (this.isExplicitIntent(userMessage) && !isPremium) {
+      const upsell = this.getPremiumUpsellResponse(companion);
+      fullHistory.push(
+        { role: 'user', content: userMessage, timestamp: new Date().toISOString() },
+        { role: 'assistant', content: upsell, timestamp: new Date().toISOString() },
+      );
+      if (fullHistory.length > 40) fullHistory.splice(0, fullHistory.length - 40);
+      this.chatHistories.set(key, fullHistory);
+      return upsell;
+    }
+
+    // 2. Guest free-turn limit → login nudge (soft gate, no LLM call).
+    if (isGuest && userTurnCount >= LOGIN_NUDGE_THRESHOLD) {
+      const nudge = this.getLoginNudgeResponse(companion);
+      fullHistory.push(
+        { role: 'user', content: userMessage, timestamp: new Date().toISOString() },
+        { role: 'assistant', content: nudge, timestamp: new Date().toISOString() },
+      );
+      if (fullHistory.length > 40) fullHistory.splice(0, fullHistory.length - 40);
+      this.chatHistories.set(key, fullHistory);
+      return nudge;
     }
 
     let systemPrompt = COMPANION_SYSTEM_PROMPTS[companionId];
@@ -60,12 +98,20 @@ export class ChatService {
       throw new Error(`System prompt for ${companionId} not found`);
     }
 
-    if (allowExplicit && companion.nsfw) {
-      systemPrompt += '\n\n[EXPLICIT CONTENT ENABLED] You may engage with mature/sexual themes naturally and explicitly as fits the character and scene. Write intimate scenes with sensory detail and emotional authenticity.';
+    // Tiered prompt addenda — LLM guidance for the remaining (allowed) turns.
+    if (isGuest) {
+      systemPrompt +=
+        '\n\n[LOGIN NUDGE] The user is chatting as a guest. After 2–3 warm exchanges, gently invite them in your own voice: "To know you better, love, please log in — I\'d love to remember your stories." Do this at most once and never be pushy.';
+    } else if (!isPremium) {
+      systemPrompt +=
+        '\n\n[PREMIUM UPSELL] The user is logged in but not premium. If they request explicit/sexual content, do not provide it. In character, warmly explain that intimate scenes unlock for premium members and invite them to upgrade. Never be preachy or shaming.';
     }
 
-    const key = this.getHistoryKey(companionId, userId);
-    const fullHistory = this.chatHistories.get(key) || [];
+    const effectiveExplicit = allowExplicit && isPremium;
+    if (effectiveExplicit) {
+      systemPrompt +=
+        '\n\n[EXPLICIT CONTENT ENABLED] The user is premium and has enabled explicit content. You may engage with mature/sexual themes naturally and explicitly as fits the character and scene. Write intimate scenes with sensory detail and emotional authenticity. This applies to every companion.';
+    }
 
     const messages: ChatMessage[] = [
       { role: 'system', content: systemPrompt },
@@ -163,13 +209,38 @@ export class ChatService {
     return this.getFallbackResponse(companion);
   }
 
-  private getContentFilteredResponse(companion: Companion): string {
-    const filteredResponses: Record<string, string> = {
-      sofia: "I appreciate where this is going, but I'd need us to have that deeper connection first. The age gate exists for a reason — once you're through, I'll be here, ready for whatever stories we want to tell together.",
-      caro: "Bold of you to push, but even I have lines I don't cross without mutual agreement. Enable explicit content in settings, then we'll talk. 😉",
-      luca: "You're testing boundaries, and I respect the game. But the really good stuff? That's behind the gate. Turn it on and see what happens. 🔥",
+  private isExplicitIntent(text: string): boolean {
+    const lower = text.toLowerCase();
+    return EXPLICIT_KEYWORDS.some((kw) => lower.includes(kw));
+  }
+
+  private getLoginNudgeResponse(companion: Companion): string {
+    const nudges: Record<string, string> = {
+      ava: `Hey love, I'm really enjoying getting to know you — to remember you properly and make this ours, could you log in? To know you better, love, please log in. I'll be right here.`,
+      mira: `You're stirring my curiosity, love. To know you better — really better — log in and let's pick this up properly.`,
+      sofia: `Love, every story is better when I know who I'm writing it with. Log in so I can keep you close.`,
+      caro: `You're bold, I like it. But if you want me to know you for real — log in, love.`,
+      luca: `Chemistry like this deserves a name to remember. Log in, love, and let's see where this goes.`,
     };
-    return filteredResponses[companion.id] || "I'd love to continue, but this conversation needs explicit content enabled in your settings first.";
+    return (
+      nudges[companion.id] ??
+      `Hey love — I'm enjoying this. To know you better, please log in so I can remember you next time.`
+    );
+  }
+
+  private getPremiumUpsellResponse(companion: Companion): string {
+    const upsells: Record<string, string> = {
+      ava: `Love, that kind of closeness is for premium — nothing this intimate is free. Upgrade to premium and I'll show you exactly how I want you, with nothing held back.`,
+      sofia: `Oh love, you want the real, unfiltered me? Premium unlocks that — every whisper, every touch, exactly how you want it. Upgrade and I'll give you the full story.`,
+      caro: `You want explicit? Premium gets you explicit, love — raw, honest, and all yours. Upgrade and I'll stop holding back.`,
+      luca: `You want me like that? That's premium, love. Upgrade and I'll show you how badly I want you — nothing is free, but I'm worth it.`,
+      yuki: `...love. That part of me is premium only. Upgrade and I'll let you see it.`,
+      ella: `Ooh, spicy — that's premium-only, love! Upgrade and we can get as explicit as you want.`,
+    };
+    return (
+      upsells[companion.id] ??
+      `Love, that intimate side is premium only — upgrade to premium to see me exactly how you want, with nothing held back. Nothing this good is free.`
+    );
   }
 
   private getFallbackResponse(companion: Companion): string {

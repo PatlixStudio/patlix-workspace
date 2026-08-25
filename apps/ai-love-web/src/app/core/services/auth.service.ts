@@ -29,6 +29,7 @@ export class AuthService {
   readonly user = this._user.asReadonly();
   readonly token = this._token.asReadonly();
   readonly isLoggedIn = computed(() => this._user() !== null);
+  readonly isPremium = computed(() => !!this._user()?.isSubscribed);
 
   constructor() {
     // Try to restore session from cookie
@@ -58,6 +59,19 @@ export class AuthService {
     );
     this.setSession(res);
     return res;
+  }
+
+  async subscribe(): Promise<UserProfile> {
+    const token = this._token();
+    if (!token) throw new Error('Not logged in');
+    const updated = await firstValueFrom(
+      this.http.post<UserProfile>(`${this.baseUrl}/subscribe`, {}, {
+        headers: { Authorization: `Bearer ${token}` },
+      }),
+    );
+    // API returns the full User (with isSubscribed) — update local signal
+    this._user.set(updated as UserProfile);
+    return updated as UserProfile;
   }
 
   async logout(): Promise<void> {

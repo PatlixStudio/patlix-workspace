@@ -15,6 +15,7 @@ import { Companion } from '../../core/models/companion';
 import { ChatMessage } from '../../core/models/chat';
 import { CompanionsApiService } from '../../core/services/companions-api.service';
 import { ChatService } from '../../core/services/chat.service';
+import { AuthService } from '../../core/services/auth.service';
 
 @Component({
   selector: 'app-chat',
@@ -45,6 +46,8 @@ export class ChatComponent implements OnInit, OnDestroy {
   isTyping = signal(false);
   voiceEnabled = signal(true);
   speakingId = signal<string | null>(null);
+  showLoginBanner = signal(false);
+  showPremiumBanner = signal(false);
 
   private audio: HTMLAudioElement | null = null;
 
@@ -52,6 +55,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   private readonly router = inject(Router);
   private readonly companionsApi = inject(CompanionsApiService);
   private readonly chatService = inject(ChatService);
+  protected readonly auth = inject(AuthService);
 
   avatarUrl = computed(() => {
     const c = this.companion();
@@ -113,6 +117,32 @@ export class ChatComponent implements OnInit, OnDestroy {
     if (id) this.speakingId.set(null);
   }
 
+  private checkForBanners(response: string): void {
+    const lower = response.toLowerCase();
+    if (lower.includes('please log in') || lower.includes('to know you better')) {
+      this.showLoginBanner.set(true);
+    }
+    if (lower.includes('premium') && (lower.includes('upgrade') || lower.includes('unlock'))) {
+      this.showPremiumBanner.set(true);
+    }
+  }
+
+  goLogin(): void {
+    void this.router.navigate(['/login']);
+  }
+
+  goPremium(): void {
+    void this.router.navigate(['/profile']);
+  }
+
+  dismissLoginBanner(): void {
+    this.showLoginBanner.set(false);
+  }
+
+  dismissPremiumBanner(): void {
+    this.showPremiumBanner.set(false);
+  }
+
   private async loadCompanion(id: string): Promise<void> {
     try {
       const companion = await firstValueFrom(this.companionsApi.get(id));
@@ -167,6 +197,7 @@ export class ChatComponent implements OnInit, OnDestroy {
       };
       this.messages.update((msgs) => [...msgs, assistantMessage]);
       this.scrollToBottom();
+      this.checkForBanners(response);
 
       if (this.voiceEnabled()) {
         void this.playVoice(assistantMessage.id, response);
