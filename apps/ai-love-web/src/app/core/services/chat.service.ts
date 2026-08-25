@@ -45,9 +45,9 @@ export class ChatService {
       const response = await firstValueFrom(
         this.http.get<{ messages: ChatMessage[] }>(`${this.apiUrl}/${companionId}/history`),
       );
-      return response.messages.map(m => ({
+      return response.messages.map((m: any) => ({
         ...m,
-        timestamp: new Date(m.timestamp),
+        timestamp: m.timestamp ? new Date(m.timestamp as string | number) : new Date(),
       }));
     } catch {
       return [];

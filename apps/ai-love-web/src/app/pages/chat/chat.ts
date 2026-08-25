@@ -218,6 +218,7 @@ export class ChatComponent implements OnInit, OnDestroy {
   }
 
   formatTime(date: Date): string {
-    return new Date(date).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    const d = date instanceof Date ? date : new Date(date as unknown as string);
+    return isNaN(d.getTime()) ? '' : d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   }
 }

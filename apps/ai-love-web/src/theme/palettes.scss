@@ -1,5 +1,14 @@
 @use 'sass:map';
 
+// ============================================================
+// ai-love M3 palettes.
+// A Material 3 primary palette must carry hue tones *plus* nested
+// `secondary`, `neutral` and `neutral-variant` maps — Material derives
+// the surface system tokens (surface-container*, on-surface-variant, …)
+// from those sub-palettes. Omitting them compiles those tokens to empty
+// values and every transparent surface in the app breaks.
+// ============================================================
+
 // Brand rose — anchor tone 40 = #F43F6B (warm romantic pink) for ai-love.
 $_rose: (
   0: #000000,
@@ -20,8 +29,87 @@ $_rose: (
   100: #ffffff,
 );
 
-// Brand plum — deep violet-rose accent for surfaces and secondary highlights.
-$_plum: (
+// Muted rose tones for secondary roles (containers, less-chroma accents).
+$_rose-secondary: (
+  0: #000000,
+  10: #24181c,
+  20: #3f2d31,
+  25: #4c383c,
+  30: #584347,
+  35: #654e52,
+  40: #725a5e,
+  50: #8d7277,
+  60: #a88b90,
+  70: #c4a5aa,
+  80: #e1bfc4,
+  90: #ffdade,
+  95: #ffecef,
+  98: #fff8f8,
+  99: #fffbff,
+  100: #ffffff,
+);
+
+// Warm plum-grey neutrals — drive all surface-container tokens.
+// Tones 4/6/12/17/22/24/87/92/94/96 are mandatory: Material reads these
+// exact hues for background/surface/surface-container* system tokens.
+$_neutral: (
+  0: #000000,
+  4: #140d0c,
+  6: #1a1312,
+  10: #201a19,
+  12: #261f1e,
+  17: #312928,
+  20: #362f2e,
+  22: #3b3433,
+  24: #403938,
+  25: #413a38,
+  30: #4d4544,
+  35: #5a5150,
+  40: #675d5c,
+  50: #827675,
+  60: #9d908e,
+  70: #b8aaa9,
+  80: #d4c5c4,
+  87: #ecdcdc,
+  90: #f1e1e0,
+  92: #f6e6e5,
+  94: #faecea,
+  95: #ffefee,
+  96: #fff1f0,
+  98: #fff8f7,
+  99: #fffbff,
+  100: #ffffff,
+);
+
+// Slightly rose-tinted greys for outline / on-surface-variant roles.
+$_rose-neutral-variant: (
+  0: #000000,
+  10: #201a1b,
+  20: #362f30,
+  25: #42393a,
+  30: #4e4446,
+  35: #5b5051,
+  40: #685d5f,
+  50: #827577,
+  60: #9c8f91,
+  70: #b7a9ab,
+  80: #d3c4c6,
+  90: #f0e0e2,
+  95: #ffeef0,
+  98: #fff8f8,
+  99: #fffbff,
+  100: #ffffff,
+);
+
+/// Exposed rose palette for `mat.theme(color: (primary: ...))`.
+$rose-palette: map.merge($_rose, (
+  secondary: $_rose-secondary,
+  neutral: $_neutral,
+  neutral-variant: $_rose-neutral-variant,
+));
+
+/// Brand plum — deep violet-rose accent for tertiary highlights.
+$plum-palette: (
   0: #000000,
   10: #2b0a2e,
   20: #432147,
@@ -36,32 +124,6 @@ $_plum: (
   90: #ffd7f8,
   95: #ffebfb,
   98: #fff7fb,
-  99: #fffbff,
-  100: #ffffff,
-);
-
-/// Exposed rose palette for `mat.theme(color: (primary: ...))`.
-$rose-palette: map.set($_rose, 'palette', $_rose);
-
-/// Exposed plum palette for `mat.theme(color: (tertiary: ...))`.
-$plum-palette: map.set($_plum, 'palette', $_plum);
-
-/// Warm neutral palette used for surfaces/backgrounds.
-$neutral-palette: (
-  0: #000000,
-  10: #1c1b1b,
-  20: #313030,
-  25: #3d3b3b,
-  30: #494647,
-  35: #555252,
-  40: #615d5e,
-  50: #7a7676,
-  60: #948f90,
-  70: #afaaaa,
-  80: #cbc5c5,
-  90: #e7e1e1,
-  95: #f6efef,
-  98: #fff8f8,
   99: #fffbff,
   100: #ffffff,
 );

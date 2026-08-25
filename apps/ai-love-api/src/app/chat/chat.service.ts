@@ -6,6 +6,8 @@ import { Companion } from '../companions/companion.entity';
 export interface ChatMessage {
   role: 'user' | 'assistant' | 'system';
   content: string;
+  /** ISO timestamp — set when the message is stored. */
+  timestamp?: string;
 }
 
 export interface SendMessageOptions {
@@ -75,8 +77,8 @@ export class ChatService {
       const response = await this.callLLM(messages, companion);
       
       fullHistory.push(
-        { role: 'user', content: userMessage },
-        { role: 'assistant', content: response },
+        { role: 'user', content: userMessage, timestamp: new Date().toISOString() },
+        { role: 'assistant', content: response, timestamp: new Date().toISOString() },
       );
       
       if (fullHistory.length > 40) {
