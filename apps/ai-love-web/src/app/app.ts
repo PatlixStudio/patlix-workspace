@@ -3,7 +3,6 @@ import { Router, RouterModule } from '@angular/router';
 import { NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
 import { MatIconButton } from '@angular/material/button';
-import { MatIcon } from '@angular/material/icon';
 import { MatTooltip } from '@angular/material/tooltip';
 import { AuthService } from './core/services/auth.service';
 import { ThemeService } from './core/services/theme.service';
@@ -14,7 +13,7 @@ import { NSFW_OPTIN_KEY } from './core/models/companion';
  */
 @Component({
   selector: 'app-root',
-  imports: [RouterModule, MatIconButton, MatIcon, MatTooltip],
+  imports: [RouterModule, MatIconButton, MatTooltip],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
