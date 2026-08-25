@@ -1,7 +1,5 @@
-import { Component, OnInit, inject } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
-import { MatButtonToggle, MatButtonToggleGroup } from '@angular/material/button-toggle';
-import { MatChip, MatChipsModule } from '@angular/material/chips';
 import { MatProgressSpinner } from '@angular/material/progress-spinner';
 import { Observable } from 'rxjs';
 import { Companion, CompanionGender } from '../../core/models/companion';
@@ -9,45 +7,30 @@ import { CompanionsApiService } from '../../core/services/companions-api.service
 import { CompanionCardComponent } from './companion-card';
 
 /**
- * Catalog page: grids all companions with gender and personality-tag filters.
+ * Catalog page: grids all companions with gender filter pills.
  */
 @Component({
   selector: 'app-companion-list',
-  imports: [
-    AsyncPipe,
-    MatButtonToggle,
-    MatButtonToggleGroup,
-    MatChip,
-    MatChipsModule,
-    MatProgressSpinner,
-    CompanionCardComponent,
-  ],
+  imports: [AsyncPipe, MatProgressSpinner, CompanionCardComponent],
   templateUrl: './companion-list.html',
   styleUrl: './companion-list.scss',
 })
-export class CompanionListComponent implements OnInit {
+export class CompanionListComponent {
   private readonly api = inject(CompanionsApiService);
 
-  protected gender: CompanionGender | undefined = undefined;
-  protected selectedTag: string | undefined = undefined;
+  protected readonly genders: Array<{ value: CompanionGender | undefined; label: string }> = [
+    { value: undefined, label: 'All' },
+    { value: CompanionGender.Female, label: 'She' },
+    { value: CompanionGender.Male, label: 'He' },
+  ];
+
+  protected selectedGender: CompanionGender | undefined = undefined;
   protected companions$: Observable<Companion[]> = this.api.list();
-  protected tags: string[] = [];
 
-  ngOnInit(): void {
-    this.api.personalityTags().subscribe((tags) => {
-      this.tags = tags;
-    });
-  }
-
-  /** Toggles a personality-tag filter. */
-  protected toggleTag(tag: string): void {
-    this.selectedTag = this.selectedTag === tag ? undefined : tag;
-    this.applyFilters();
-  }
-
-  /** Applies the current gender + tag filters. */
-  protected applyFilters(): void {
-    this.companions$ = this.api.list(this.gender, this.selectedTag);
+  /** Selects a gender pill and refreshes the catalog. */
+  protected selectGender(gender: CompanionGender | undefined): void {
+    this.selectedGender = gender;
+    this.companions$ = this.api.list(gender, undefined);
   }
 
   protected readonly CompanionGender = CompanionGender;

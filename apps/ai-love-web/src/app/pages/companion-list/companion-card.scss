@@ -4,7 +4,7 @@
   background: var(--al-card);
   border: 1px solid var(--al-border);
   border-radius: 20px;
-  padding: 24px;
+  padding: 12px;
   cursor: pointer;
   transition:
     transform 0.18s ease,
@@ -19,15 +19,15 @@
 }
 
 .card-avatar {
-  width: 120px;
-  aspect-ratio: 9 / 16;
-  border-radius: 24px;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin: 0 auto 20px;
+  margin: 0 auto 12px;
   overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 
   .avatar-img {
     width: 100%;
@@ -55,20 +55,20 @@
 .card-name {
   font-family: var(--al-brand-font);
   font-size: 22px;
-  margin-bottom: 8px;
+  font-weight: 700;
+  font-style: italic;
+  letter-spacing: 0.01em;
+  margin-bottom: 6px;
   text-align: center;
-  background: linear-gradient(90deg, var(--mat-sys-on-surface), var(--mat-sys-primary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--mat-sys-primary);
 }
 
 .card-meta {
   color: var(--al-text-muted);
-  font-size: 14px;
-  line-height: 1.5;
+  font-size: 13px;
+  line-height: 1.45;
   text-align: center;
-  margin-bottom: 16px;
+  margin-bottom: 10px;
 }
 
 .card-tags {
@@ -80,8 +80,8 @@
 
 .nsfw-badge {
   position: absolute;
-  top: 16px;
-  right: 16px;
+  top: 20px;
+  right: 20px;
   font-size: 11px;
   letter-spacing: 0.06em;
   text-transform: uppercase;

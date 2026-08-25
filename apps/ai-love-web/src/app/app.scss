@@ -1,6 +1,6 @@
 :host {
   display: block;
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .shell {
@@ -10,7 +10,8 @@
   display: flex;
   align-items: center;
   gap: 24px;
-  padding: 12px 28px;
+  height: 56px;
+  padding: 0 28px;
   background: color-mix(in srgb, var(--al-bg) 82%, transparent);
   backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--al-border);
@@ -75,4 +76,13 @@
   border: 1px solid color-mix(in srgb, var(--mat-sys-error) 45%, transparent);
   border-radius: 999px;
   padding: 3px 10px;
+}
+
+.theme-toggle {
+  margin-left: auto;
+  color: var(--al-text-muted);
+
+  &:hover {
+    color: var(--mat-sys-primary);
+  }
 }

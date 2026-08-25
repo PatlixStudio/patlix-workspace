@@ -38,3 +38,9 @@ export class ChatHistoryDto {
   @ApiProperty({ type: [ChatMessageDto] })
   messages!: ChatMessageDto[];
 }
+
+export class SpeakDto {
+  @ApiProperty({ description: 'Text to synthesise with the companion voice' })
+  @IsString()
+  text!: string;
+}

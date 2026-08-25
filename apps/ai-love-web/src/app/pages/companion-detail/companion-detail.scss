@@ -84,11 +84,10 @@
   .profile-name {
     font-family: var(--al-brand-font);
     font-size: 36px;
+    font-weight: 700;
+    font-style: italic;
     margin: 0 0 6px;
-    background: linear-gradient(90deg, var(--mat-sys-on-surface), var(--mat-sys-primary));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: var(--mat-sys-primary);
   }
 
   .profile-meta {
@@ -249,7 +248,10 @@
   .profile-name {
     font-family: var(--al-brand-font);
     font-size: 34px;
+    font-weight: 700;
+    font-style: italic;
     margin: 0 0 4px;
+    color: var(--mat-sys-primary);
   }
 
   .profile-meta {

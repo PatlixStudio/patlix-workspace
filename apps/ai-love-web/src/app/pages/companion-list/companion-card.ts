@@ -25,8 +25,6 @@ export class CompanionCardComponent {
   /** The companion to display. */
   readonly companion = input.required<Companion>();
 
-  protected readonly avatarTone = (tone: string): string => tone;
-
   protected avatarUrl(c: Companion): string {
     return `/assets/companions/${c.id}/profile/${c.id}-profile.png`;
   }

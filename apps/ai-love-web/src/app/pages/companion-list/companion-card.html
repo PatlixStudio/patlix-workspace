@@ -1,9 +1,9 @@
 <mat-card class="card" [routerLink]="['/companions', companion().id]">
-  <div class="card-avatar" [attr.data-tone]="avatarTone(companion().avatarTone)">
-    <img [src]="avatarUrl(companion())" [alt]="companion().name" class="avatar-img" (error)="onImageError($event)">
+  <div class="card-avatar" [attr.data-tone]="companion().avatarTone">
+    <img [src]="avatarUrl(companion())" [alt]="companion().name + ' ' + companion().surname" class="avatar-img" (error)="onImageError($event)">
   </div>
 
-  <mat-card-title class="card-name">{{ companion().name }}</mat-card-title>
+  <mat-card-title class="card-name">{{ companion().name }} {{ companion().surname }}</mat-card-title>
   <mat-card-subtitle class="card-meta">
     {{ companion().age }} · {{ companion().gender === 'female' ? 'She' : 'He' }} · {{ companion().tagline }}
   </mat-card-subtitle>

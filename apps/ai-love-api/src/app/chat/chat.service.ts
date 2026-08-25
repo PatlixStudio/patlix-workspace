@@ -21,7 +21,11 @@ export class ChatService {
   private readonly logger = new Logger(ChatService.name);
   private readonly chatHistories: Map<string, ChatMessage[]> = new Map();
   private readonly ollamaBaseUrl = 'http://localhost:11434';
-  private readonly defaultModel = 'dolphin3:8b';
+  private readonly ttsBaseUrl = process.env.TTS_URL ?? 'http://localhost:8969';
+  // Prioritise installed models; fall back across the list so a missing
+  // model tag never silently degrades the chat to canned responses.
+  private readonly candidateModels = ['dolphin3:latest', 'gemma4:12b', 'mistral:latest', 'dolphin-llama3:latest'];
+  private readonly ttsModel = 'speaches-ai/Kokoro-82M-v1.0-ONNX';
 
   private getHistoryKey(companionId: string, userId = 'default'): string {
     return `${userId}:${companionId}`;
@@ -88,36 +92,73 @@ export class ChatService {
     }
   }
 
-  private async callLLM(messages: ChatMessage[], companion: Companion): Promise<string> {
-    try {
-      const response = await fetch(`${this.ollamaBaseUrl}/api/chat`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: this.defaultModel,
-          messages,
-          stream: false,
-          options: {
-            temperature: 0.8,
-            top_p: 0.9,
-            top_k: 40,
-            num_predict: 500,
-            repeat_penalty: 1.1,
-          },
-        }),
-      });
-
-      if (!response.ok) {
-        const errText = await response.text();
-        throw new Error(`Ollama API error: ${response.status} - ${errText}`);
-      }
-
-      const data = await response.json() as { message?: { content?: string } };
-      return data.message?.content?.trim() || this.getFallbackResponse(companion);
-    } catch (error) {
-      this.logger.warn(`Ollama call failed, using fallback: ${error}`);
-      return this.getFallbackResponse(companion);
+  /**
+   * Synthesises speech for a companion's reply using its unique TTS voice.
+   * @returns MP3 audio bytes from the Speaches TTS server.
+   * @throws when the companion is unknown or the TTS call fails.
+   */
+  async speak(companionId: string, text: string): Promise<Buffer> {
+    const companion = COMPANIONS.find((c) => c.id === companionId);
+    if (!companion) {
+      throw new Error(`Companion ${companionId} not found`);
     }
+
+    const response = await fetch(`${this.ttsBaseUrl}/v1/audio/speech`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      signal: AbortSignal.timeout(60_000),
+      body: JSON.stringify({
+        model: this.ttsModel,
+        input: text.slice(0, 1000),
+        voice: companion.voice,
+        response_format: 'mp3',
+      }),
+    });
+
+    if (!response.ok) {
+      const errText = await response.text().catch(() => '');
+      throw new Error(`TTS error: ${response.status} - ${errText}`);
+    }
+
+    return Buffer.from(await response.arrayBuffer());
+  }
+
+  private async callLLM(messages: ChatMessage[], companion: Companion): Promise<string> {
+    for (const model of this.candidateModels) {
+      try {
+        const response = await fetch(`${this.ollamaBaseUrl}/api/chat`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          signal: AbortSignal.timeout(120_000),
+          body: JSON.stringify({
+            model,
+            messages,
+            stream: false,
+            options: {
+              temperature: 0.8,
+              top_p: 0.9,
+              top_k: 40,
+              num_predict: 500,
+              repeat_penalty: 1.1,
+            },
+          }),
+        });
+
+        if (!response.ok) {
+          const errText = await response.text();
+          // 404 means the model tag is not installed — try the next candidate.
+          if (response.status === 404) continue;
+          throw new Error(`Ollama API error: ${response.status} - ${errText}`);
+        }
+
+        const data = await response.json() as { message?: { content?: string } };
+        const content = data.message?.content?.trim();
+        if (content) return content;
+      } catch (error) {
+        this.logger.warn(`Ollama call failed for model ${model}: ${error}`);
+      }
+    }
+    return this.getFallbackResponse(companion);
   }
 
   private getContentFilteredResponse(companion: Companion): string {

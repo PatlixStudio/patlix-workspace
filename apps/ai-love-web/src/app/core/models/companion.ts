@@ -14,6 +14,8 @@ export interface Companion {
   id: string;
   /** Display name. */
   name: string;
+  /** Last name / surname. */
+  surname: string;
   /** Presented age (18+). */
   age: number;
   /** Gender bucket used by the catalog filters. */

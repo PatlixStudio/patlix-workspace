@@ -1,7 +1,12 @@
 import { Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterLinkActive, RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs';
+import { MatIconButton } from '@angular/material/button';
+import { MatIcon } from '@angular/material/icon';
+import { MatTooltip } from '@angular/material/tooltip';
+import { AuthService } from './core/services/auth.service';
+import { ThemeService } from './core/services/theme.service';
 import { NSFW_OPTIN_KEY } from './core/models/companion';
 
 /**
@@ -9,12 +14,14 @@ import { NSFW_OPTIN_KEY } from './core/models/companion';
  */
 @Component({
   selector: 'app-root',
-  imports: [RouterLink, RouterLinkActive, RouterModule],
+  imports: [RouterModule, MatIconButton, MatIcon, MatTooltip],
   templateUrl: './app.html',
   styleUrl: './app.scss',
 })
 export class App {
   private readonly router = inject(Router);
+  protected readonly auth = inject(AuthService);
+  protected readonly theme = inject(ThemeService);
 
   protected hideNav = false;
 
@@ -28,6 +35,6 @@ export class App {
 
   /** Whether explicit content is opted in (shown in the header badge). */
   protected nsfwOptedIn(): boolean {
-    return localStorage.getItem(NSFW_OPTIN_KEY) === 'true';
+    return document.cookie.match(new RegExp(`(^| )${NSFW_OPTIN_KEY}=([^;]+)`))?.[2] === 'true';
   }
 }

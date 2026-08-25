@@ -20,6 +20,12 @@
     },
     {
       "path": "./libs/patlix-people-shared"
+    },
+    {
+      "path": "./apps/ai-love-api-e2e"
+    },
+    {
+      "path": "./apps/ai-love-api"
     }
   ],
   "compilerOptions": {}

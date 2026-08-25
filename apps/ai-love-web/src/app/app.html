@@ -10,11 +10,34 @@
         <span class="material-symbols-outlined">people</span>
         Companions
       </a>
+
+      @if (auth.isLoggedIn()) {
+        <a routerLink="/profile" routerLinkActive="active" class="nav-link">
+          <span class="material-symbols-outlined">account_circle</span>
+          {{ auth.user()?.name }}
+        </a>
+      } @else {
+        <a routerLink="/login" class="nav-link">
+          <span class="material-symbols-outlined">login</span>
+          Login
+        </a>
+      }
     </nav>
 
     @if (nsfwOptedIn()) {
       <span class="nsfw-flag">explicit on</span>
     }
+
+    <button
+      mat-icon-button
+      class="theme-toggle"
+      type="button"
+      (click)="theme.toggle()"
+      [matTooltip]="theme.isDark() ? 'Switch to light mode' : 'Switch to dark mode'"
+      aria-label="Toggle color theme"
+    >
+      <span class="material-symbols-outlined">{{ theme.isDark() ? 'light_mode' : 'dark_mode' }}</span>
+    </button>
   </header>
 }
 

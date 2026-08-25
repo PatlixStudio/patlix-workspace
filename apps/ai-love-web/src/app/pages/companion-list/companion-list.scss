@@ -23,18 +23,36 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
+  gap: 10px;
   margin-bottom: 28px;
 }
 
-.filters-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px;
+.pill {
+  appearance: none;
+  border: 1px solid var(--al-border);
+  background: var(--al-surface-2);
+  color: var(--al-text-muted);
+  font-family: var(--al-body-font);
+  font-size: 14px;
+  font-weight: 500;
+  padding: 8px 20px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition:
+    background 0.18s ease,
+    border-color 0.18s ease,
+    color 0.18s ease;
 
-  .active {
-    background: color-mix(in srgb, var(--mat-sys-primary) 24%, transparent);
+  &:hover {
     border-color: var(--mat-sys-primary);
+    color: var(--al-text);
+  }
+
+  &.active {
+    background: color-mix(in srgb, var(--mat-sys-primary) 22%, transparent);
+    border-color: var(--mat-sys-primary);
+    color: var(--mat-sys-primary);
+    font-weight: 600;
   }
 }
 

@@ -60,6 +60,17 @@ export class ChatService {
     );
   }
 
+  /**
+   * Synthesises speech in the companion's unique voice.
+   * @returns an object URL for the audio blob — revoke it after playback.
+   */
+  async speak(companionId: string, text: string): Promise<string> {
+    const blob = await firstValueFrom(
+      this.http.post(`${this.apiUrl}/chat/${companionId}/speak`, { text }, { responseType: 'blob' }),
+    );
+    return URL.createObjectURL(blob);
+  }
+
   clearCurrentSession(): void {
     this.currentCompanionId = null;
   }

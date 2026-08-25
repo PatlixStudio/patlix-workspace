@@ -45,6 +45,10 @@ export class ChatComponent implements OnInit, OnDestroy {
   isLoading = signal(false);
   error = signal<string | null>(null);
   isTyping = signal(false);
+  voiceEnabled = signal(true);
+  speakingId = signal<string | null>(null);
+
+  private audio: HTMLAudioElement | null = null;
 
   private readonly route = inject(ActivatedRoute);
   private readonly router = inject(Router);
@@ -66,6 +70,49 @@ export class ChatComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.chatService.clearCurrentSession();
+    this.stopAudio();
+  }
+
+  /** Toggles automatic voice playback of assistant replies. */
+  toggleVoice(): void {
+    const next = !this.voiceEnabled();
+    this.voiceEnabled.set(next);
+    if (!next) this.stopAudio();
+  }
+
+  /**
+   * Plays (or stops) a message's voice using the companion's unique TTS voice.
+   */
+  async speakMessage(msg: ChatMessage): Promise<void> {
+    if (this.speakingId() === msg.id) {
+      this.stopAudio();
+      return;
+    }
+    await this.playVoice(msg.id, msg.content);
+  }
+
+  private async playVoice(messageId: string, text: string): Promise<void> {
+    const companion = this.companion();
+    if (!companion) return;
+    try {
+      this.stopAudio();
+      this.speakingId.set(messageId);
+      const url = await this.chatService.speak(companion.id, text);
+      this.audio = new Audio(url);
+      this.audio.onended = () => this.stopAudio();
+      this.audio.onerror = () => this.stopAudio();
+      await this.audio.play();
+    } catch (err) {
+      console.error('Voice playback failed:', err);
+      this.stopAudio();
+    }
+  }
+
+  private stopAudio(): void {
+    this.audio?.pause();
+    this.audio = null;
+    const id = this.speakingId();
+    if (id) this.speakingId.set(null);
   }
 
   private async loadCompanion(id: string): Promise<void> {
@@ -121,6 +168,10 @@ export class ChatComponent implements OnInit, OnDestroy {
       };
       this.messages.update((msgs) => [...msgs, assistantMessage]);
       this.scrollToBottom();
+
+      if (this.voiceEnabled()) {
+        void this.playVoice(assistantMessage.id, response);
+      }
     } catch (err) {
       this.error.set('Failed to send message. Please try again.');
       console.error(err);

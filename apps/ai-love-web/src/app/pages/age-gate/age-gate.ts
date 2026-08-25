@@ -18,10 +18,14 @@ export class AgeGateComponent {
   private readonly router = inject(Router);
   protected nsfwOptIn = false;
 
-  /** Persists the 18+ consent and (optionally) the explicit-content opt-in. */
+  /** Persists the 18+ consent and (optionally) the explicit-content opt-in via cookies. */
   protected confirmAge(): void {
-    localStorage.setItem(AGE_GATE_KEY, 'true');
-    localStorage.setItem(NSFW_OPTIN_KEY, this.nsfwOptIn ? 'true' : 'false');
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1); // 1 year expiry
+    const cookieString = `${AGE_GATE_KEY}=true; expires=${date.toUTCString()}; path=/`;
+    document.cookie = cookieString;
+    const nsfwCookieString = `${NSFW_OPTIN_KEY}=${this.nsfwOptIn ? 'true' : 'false'}; expires=${date.toUTCString()}; path=/`;
+    document.cookie = nsfwCookieString;
     void this.router.navigate(['/companions']);
   }
 }

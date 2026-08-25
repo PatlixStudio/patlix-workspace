@@ -19,6 +19,8 @@ export class Companion {
   id!: string;
   /** Display name. */
   name!: string;
+  /** Last name / surname. */
+  surname!: string;
   /** Presented age (18+). */
   age!: number;
   /** Gender bucket used by the catalog filters. */
@@ -37,6 +39,8 @@ export class Companion {
   avatarTone!: string;
   /** Tone of voice for future chat integration. */
   tone!: string;
+  /** TTS voice id (Speaches/Kokoro) used for this companion's spoken replies. */
+  voice!: string;
   /** Whether this companion can engage in mature topics (gated by the 18+ flow). */
   nsfw!: boolean;
 }

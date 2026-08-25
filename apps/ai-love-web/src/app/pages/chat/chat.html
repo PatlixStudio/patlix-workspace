@@ -7,15 +7,23 @@
     
     @if (companion(); as c) {
       <div class="companion-info">
-        <img [src]="avatarUrl()" [alt]="c.name" class="avatar" (error)="onImageError($event)">
+        <img [src]="avatarUrl()" [alt]="c.name + ' ' + c.surname" class="avatar" (error)="onImageError($event)">
         <div class="companion-details">
-          <h2>{{ c.name }}, {{ c.age }}</h2>
+          <h2>{{ c.name }} {{ c.surname }}, {{ c.age }}</h2>
           <p class="tagline">{{ c.tagline }}</p>
         </div>
       </div>
     }
 
     <div class="header-actions">
+      <button
+        mat-icon-button
+        (click)="toggleVoice()"
+        [matTooltip]="voiceEnabled() ? 'Voice answers on' : 'Voice answers off'"
+        [class.voice-active]="voiceEnabled()"
+      >
+        <mat-icon>{{ voiceEnabled() ? 'graphic_eq' : 'volume_off' }}</mat-icon>
+      </button>
       <button mat-icon-button (click)="clearChat()" matTooltip="Clear chat history" [disabled]="messages().length === 0">
         <mat-icon>delete_outline</mat-icon>
       </button>
@@ -28,10 +36,10 @@
       @if (messages().length === 0) {
         <div class="welcome-message">
           <div class="welcome-avatar">
-            <img [src]="avatarUrl()" [alt]="companion()?.name" (error)="onImageError($event)">
+            <img [src]="avatarUrl()" [alt]="companion()?.name + ' ' + companion()?.surname" (error)="onImageError($event)">
           </div>
           <h3>Start a conversation</h3>
-          <p>{{ companion()?.name }} is ready to chat. Say hello!</p>
+          <p>{{ companion()?.name }} {{ companion()?.surname }} is ready to chat. Say hello!</p>
           @if ((companion()?.personalityTags?.length ?? 0) > 0) {
             <div class="personality-chips">
               @for (tag of companion()!.personalityTags; track tag) {
@@ -45,13 +53,26 @@
           <div class="message" [class.user]="msg.role === 'user'" [class.assistant]="msg.role === 'assistant'">
             @if (msg.role === 'assistant') {
               <div class="message-avatar">
-                <img [src]="avatarUrl()" [alt]="companion()?.name" (error)="onImageError($event)">
+                <img [src]="avatarUrl()" [alt]="companion()?.name + ' ' + companion()?.surname" (error)="onImageError($event)">
               </div>
             }
             <div class="message-content">
               <div class="message-bubble">
                 <p class="message-text">{{ msg.content }}</p>
-                <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
+                <div class="message-footer">
+                  <span class="message-time">{{ formatTime(msg.timestamp) }}</span>
+                  @if (msg.role === 'assistant') {
+                    <button
+                      mat-icon-button
+                      class="speak-btn"
+                      (click)="speakMessage(msg)"
+                      [matTooltip]="'Replay voice'"
+                      aria-label="Play voice message"
+                    >
+                      <mat-icon>{{ speakingId() === msg.id ? 'hearing' : 'volume_up' }}</mat-icon>
+                    </button>
+                  }
+                </div>
               </div>
             </div>
             @if (msg.role === 'user') {
@@ -61,19 +82,19 @@
             }
           </div>
         }
-      }
 
-      @if (isTyping()) {
-        <div class="typing-indicator">
-          <div class="typing-avatar">
-            <img [src]="avatarUrl()" [alt]="companion()?.name" (error)="onImageError($event)">
+        @if (isTyping()) {
+          <div class="typing-indicator">
+            <div class="typing-avatar">
+              <img [src]="avatarUrl()" [alt]="companion()?.name + ' ' + companion()?.surname" (error)="onImageError($event)">
+            </div>
+            <div class="typing-bubble">
+              <span class="dot"></span>
+              <span class="dot"></span>
+              <span class="dot"></span>
+            </div>
           </div>
-          <div class="typing-bubble">
-            <span class="dot"></span>
-            <span class="dot"></span>
-            <span class="dot"></span>
-          </div>
-        </div>
+        }
       }
     </div>
   </main>

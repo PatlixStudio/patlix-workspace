@@ -1,0 +1,48 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <span class="material-symbols-outlined auth-logo">favorite</span>
+    <h1 class="auth-title">Welcome back</h1>
+    <p class="auth-sub">Log in to your ai-love account</p>
+
+    @if (error) {
+      <div class="auth-error" role="alert">{{ error }}</div>
+    }
+
+    <form (ngSubmit)="submit()">
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Email</mat-label>
+        <input matInput type="email" [(ngModel)]="email" name="email" required />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Password</mat-label>
+        <input matInput type="password" [(ngModel)]="password" name="password" required />
+      </mat-form-field>
+
+      <button
+        mat-flat-button
+        color="primary"
+        class="auth-btn"
+        type="submit"
+        [disabled]="loading || !email || !password"
+      >
+        @if (loading) {
+          <mat-spinner diameter="20" />
+        } @else {
+          Log in
+        }
+      </button>
+    </form>
+
+    <p class="auth-switch">
+      Don't have an account?
+      <a routerLink="/register">Sign up</a>
+    </p>
+
+    <p class="auth-back">
+      <a routerLink="/companions">
+        <mat-icon>arrow_back</mat-icon> Back to companions
+      </a>
+    </p>
+  </div>
+</div>

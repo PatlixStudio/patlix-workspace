@@ -1,0 +1,90 @@
+<div class="page">
+  <header class="page-head">
+    <mat-icon>account_circle</mat-icon>
+    <h1 class="page-title">Your profile</h1>
+    <p class="page-sub">Manage your ai-love account</p>
+  </header>
+
+  @if (user(); as u) {
+    <mat-card class="profile-card">
+      <div class="profile-avatar">
+        {{ u.name.charAt(0) }}{{ u.surname.charAt(0) }}
+      </div>
+
+      <mat-card-content class="profile-info">
+        <h2 class="profile-name">{{ u.name }} {{ u.surname }}</h2>
+        <p class="profile-email">{{ u.email }}</p>
+
+        <div class="profile-badge" [class.subscribed]="u.isSubscribed">
+          @if (u.isSubscribed) {
+            <mat-icon>verified</mat-icon> Premium member
+          } @else {
+            <mat-icon>person</mat-icon> Free plan
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <mat-card class="details-card">
+      <mat-card-content>
+        <div class="detail-row">
+          <span class="detail-label">Member since</span>
+          <span>{{ u.createdAt | date:'mediumDate' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Messages</span>
+          <span class="messages-count">
+            @if (u.isSubscribed) {
+              Unlimited
+            } @else {
+              3 free messages remaining
+            }
+          </span>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    @if (!u.isSubscribed) {
+      <mat-card class="upgrade-card">
+        <mat-card-content>
+          <h3>Upgrade to Premium</h3>
+          <p>
+            Get unlimited messages, access to NSFW companions,
+            priority support, and voice chat.
+          </p>
+          <button
+            mat-flat-button
+            color="primary"
+            class="upgrade-btn"
+            (click)="subscribe()"
+          >
+            <mat-icon>diamond</mat-icon> Upgrade now
+          </button>
+        </mat-card-content>
+      </mat-card>
+    }
+
+    <div class="actions">
+      <button mat-stroked-button (click)="goCompanions()">
+        <mat-icon>people</mat-icon> Back to companions
+      </button>
+      <button mat-stroked-button color="warn" class="logout-btn" (click)="logout()">
+        <mat-icon>logout</mat-icon> Log out
+      </button>
+    </div>
+  } @else {
+    <div class="not-logged-in">
+      <mat-icon>account_circle</mat-icon>
+      <h2>Not logged in</h2>
+      <p>Log in to see your profile</p>
+      <div class="actions">
+        <a mat-flat-button color="primary" routerLink="/login">
+          <mat-icon>login</mat-icon> Log in
+        </a>
+        <a mat-stroked-button routerLink="/register">
+          <mat-icon>person_add</mat-icon> Register
+        </a>
+      </div>
+    </div>
+  }
+</div>

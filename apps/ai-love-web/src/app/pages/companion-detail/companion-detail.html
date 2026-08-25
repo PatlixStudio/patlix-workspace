@@ -7,11 +7,11 @@
     <mat-card class="profile">
       <div class="profile-top">
         <div class="profile-avatar" [attr.data-tone]="companion.avatarTone">
-          <img [src]="avatarUrl(companion)" [alt]="companion.name" class="avatar-img" (error)="onImageError($event)">
+          <img [src]="avatarUrl(companion)" [alt]="companion.name + ' ' + companion.surname" class="avatar-img" (error)="onImageError($event)">
         </div>
 
         <div class="profile-head">
-          <h1 class="profile-name">{{ companion.name }}</h1>
+          <h1 class="profile-name">{{ companion.name }} {{ companion.surname }}</h1>
           <p class="profile-meta">
             {{ companion.age }} years old · {{ companion.gender === 'female' ? 'She' : 'He' }} ·
             voice: {{ companion.tone }}
@@ -24,7 +24,7 @@
       </div>
 
       <mat-card-content class="profile-body">
-        <h2 class="profile-section">About {{ companion.name }}</h2>
+        <h2 class="profile-section">About {{ companion.name }} {{ companion.surname }}</h2>
         <p class="profile-persona">{{ companion.persona }}</p>
 
         <h2 class="profile-section">Personality</h2>

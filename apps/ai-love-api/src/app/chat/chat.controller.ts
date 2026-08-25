@@ -1,8 +1,8 @@
-import { Controller, Post, Get, Delete, Body, Param, HttpCode, HttpStatus, Req } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Body, Param, HttpCode, HttpStatus, Req, Header, NotFoundException, BadGatewayException, StreamableFile } from '@nestjs/common';
 import { ApiTags, ApiOperation, ApiResponse, ApiParam } from '@nestjs/swagger';
 import { Request } from 'express';
 import { ChatService } from './chat.service';
-import { SendMessageDto, ChatResponseDto, ChatHistoryDto } from './chat.dto';
+import { SendMessageDto, ChatResponseDto, ChatHistoryDto, SpeakDto } from './chat.dto';
 
 interface AuthenticatedRequest extends Request {
   user?: { sub: string };
@@ -38,6 +38,25 @@ export class ChatController {
       allowExplicit: dto.allowExplicit ?? false,
     });
     return { response };
+  }
+
+  @Post(':companionId/speak')
+  @HttpCode(HttpStatus.OK)
+  @Header('Content-Type', 'audio/mpeg')
+  @ApiOperation({ summary: 'Synthesise speech in the companion\'s unique voice' })
+  @ApiParam({ name: 'companionId', description: 'Companion ID' })
+  @ApiResponse({ status: 200, description: 'audio/mpeg stream' })
+  async speak(
+    @Param('companionId') companionId: string,
+    @Body() dto: SpeakDto,
+  ): Promise<StreamableFile> {
+    try {
+      return new StreamableFile(await this.chatService.speak(companionId, dto.text));
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      if (message.includes('not found')) throw new NotFoundException(message);
+      throw new BadGatewayException(message);
+    }
   }
 
   @Get(':companionId/history')
